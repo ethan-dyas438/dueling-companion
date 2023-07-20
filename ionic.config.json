@@ -1,0 +1,7 @@
+{
+  "name": "Dueling Companion",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "react-vite"
+}
