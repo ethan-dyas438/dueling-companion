@@ -1,58 +1,54 @@
-import MessageListItem from '../components/MessageListItem';
 import { useState } from 'react';
-import { Message, getMessages } from '../data/messages';
 import {
-  IonContent,
-  IonHeader,
-  IonList,
+  IonButton,
+  IonCol,
+  IonGrid,
+  IonInput,
+  IonItemDivider,
   IonPage,
-  IonRefresher,
-  IonRefresherContent,
-  IonTitle,
-  IonToolbar,
+  IonRow,
   useIonViewWillEnter
 } from '@ionic/react';
+import { v4 as uuidv4, validate as validateUuid } from 'uuid';
 import './Home.css';
 
 const Home: React.FC = () => {
 
-  const [messages, setMessages] = useState<Message[]>([]);
+  const [duelCode, setDuelCode] = useState<string>('');
+  const [newRandomDuelCode, setNewRandomDuelCode] = useState<string>(uuidv4());
+
+  const validateDuelCode = (): boolean => {
+    if (duelCode && validateUuid(duelCode)) {
+      return false
+    }
+    return true
+  }
 
   useIonViewWillEnter(() => {
-    const msgs = getMessages();
-    setMessages(msgs);
+    setNewRandomDuelCode(uuidv4());
   });
-
-  const refresh = (e: CustomEvent) => {
-    setTimeout(() => {
-      e.detail.complete();
-    }, 3000);
-  };
 
   return (
     <IonPage id="home-page">
-      <IonHeader>
-        <IonToolbar>
-          <IonTitle>Inbox</IonTitle>
-        </IonToolbar>
-      </IonHeader>
-      <IonContent fullscreen>
-        <IonRefresher slot="fixed" onIonRefresh={refresh}>
-          <IonRefresherContent></IonRefresherContent>
-        </IonRefresher>
-
-        <IonHeader collapse="condense">
-          <IonToolbar>
-            <IonTitle size="large">
-              Inbox
-            </IonTitle>
-          </IonToolbar>
-        </IonHeader>
-
-        <IonList>
-          {messages.map(m => <MessageListItem key={m.id} message={m} />)}
-        </IonList>
-      </IonContent>
+      <IonGrid>
+        <IonRow>
+          <IonCol>
+            {/* Once on the duel page display a loading indicator for creating the duel session as the backend processes the reques to create and initialize a new duel, then display page when finished */}
+            <IonButton routerLink={`/message/${newRandomDuelCode}`}>Start Duel</IonButton>
+            <IonItemDivider />
+          </IonCol>
+        </IonRow>
+        <IonRow className="duel-code-input" >
+          <IonCol>
+            <IonInput label="Duel Code" label-placement="floating" fill="outline" placeholder="Enter duel code" type='text' onIonInput={changeEvent => changeEvent?.target?.value ? setDuelCode(changeEvent.target.value.toString()) : setDuelCode('')} />
+          </IonCol>
+        </IonRow>
+        <IonRow>
+          <IonCol>
+            <IonButton routerLink={`/message/${duelCode}`} disabled={validateDuelCode()}>Join Duel</IonButton>
+          </IonCol>
+        </IonRow>
+      </IonGrid>
     </IonPage>
   );
 };

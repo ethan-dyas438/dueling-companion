@@ -1,0 +1,10 @@
+ion-grid {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.duel-code-input {
+    padding-top: 10px;
+}
