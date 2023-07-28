@@ -6,5 +6,11 @@ ion-grid {
 }
 
 .duel-code-input {
-    padding-top: 10px;
+    margin-top: 20px;
+    padding-top: 20px;
+    border: solid;
+    border-left: none;
+    border-bottom: none;
+    border-right: none;
+    border-color: gray;
 }

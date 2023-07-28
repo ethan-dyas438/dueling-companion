@@ -4,7 +4,6 @@ import {
   IonCol,
   IonGrid,
   IonInput,
-  IonItemDivider,
   IonPage,
   IonRow,
   useIonViewWillEnter
@@ -33,9 +32,10 @@ const Home: React.FC = () => {
       <IonGrid>
         <IonRow>
           <IonCol>
-            {/* Once on the duel page display a loading indicator for creating the duel session as the backend processes the reques to create and initialize a new duel, then display page when finished */}
-            <IonButton routerLink={`/message/${newRandomDuelCode}`}>Start Duel</IonButton>
-            <IonItemDivider />
+            {/* Finish basic turn trade-off UI for Duel Mat. */}
+            {/* Have the backend processes the request to create and initialize a new duel, then display page when finished and implement websocket beginning with turn switching */}
+            {/* Model data for cards and duel sessions (How does the player get tracked?) */}
+            <IonButton routerLink={`/duel/${newRandomDuelCode}`}>Start Duel!</IonButton>
           </IonCol>
         </IonRow>
         <IonRow className="duel-code-input" >
@@ -45,7 +45,7 @@ const Home: React.FC = () => {
         </IonRow>
         <IonRow>
           <IonCol>
-            <IonButton routerLink={`/message/${duelCode}`} disabled={validateDuelCode()}>Join Duel</IonButton>
+            <IonButton routerLink={`/duel/${duelCode}`} disabled={validateDuelCode()}>Join Duel!</IonButton>
           </IonCol>
         </IonRow>
       </IonGrid>
