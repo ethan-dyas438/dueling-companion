@@ -60,7 +60,15 @@ const Home: React.FC = () => {
         </IonRow>
         <IonRow className="duel-code-input">
           <IonCol>
-            <IonInput label="Duel Code" label-placement="floating" fill="outline" placeholder="Enter duel code" type='text' onIonInput={changeEvent => changeEvent?.target?.value ? setDuelCode(changeEvent.target.value.toString()) : setDuelCode('')} />
+            <IonInput
+              label="Duel Code"
+              label-placement="floating"
+              fill="outline"
+              placeholder="Enter duel code"
+              type='text'
+              value={duelCode}
+              onIonInput={changeEvent => changeEvent?.target?.value ? setDuelCode(changeEvent.target.value.toString()) : setDuelCode('')}
+            />
           </IonCol>
         </IonRow>
         <IonRow>
