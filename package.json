@@ -23,11 +23,13 @@
     "@ionic/react-router": "^7.0.0",
     "@types/react-router": "^5.1.20",
     "@types/react-router-dom": "^5.3.3",
+    "axios": "^1.6.2",
     "ionicons": "^7.0.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router": "^5.3.4",
     "react-router-dom": "^5.3.4",
+    "react-use-websocket": "^4.5.0",
     "uuid": "^9.0.0"
   },
   "devDependencies": {
@@ -40,7 +42,7 @@
     "@types/uuid": "^9.0.2",
     "@vitejs/plugin-legacy": "^4.0.2",
     "@vitejs/plugin-react": "^4.0.1",
-    "cypress": "^12.7.0",
+    "cypress": "^13.6.1",
     "eslint": "^8.35.0",
     "eslint-plugin-react": "^7.32.2",
     "jsdom": "^22.1.0",

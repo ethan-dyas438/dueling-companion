@@ -3,6 +3,17 @@ ion-grid {
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    min-width: 80%;
+    
+    ion-row {
+        min-width: 100%;
+    }
+
+    ion-col {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
 }
 
 .duel-code-input {

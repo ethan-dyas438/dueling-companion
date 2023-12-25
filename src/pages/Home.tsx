@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { MouseEventHandler, useContext, useState } from 'react';
 import {
   IonButton,
   IonCol,
@@ -6,21 +6,44 @@ import {
   IonInput,
   IonPage,
   IonRow,
+  NavContext,
   useIonViewWillEnter
 } from '@ionic/react';
 import { v4 as uuidv4, validate as validateUuid } from 'uuid';
 import './Home.css';
+import axios from 'axios';
+import { duelsURL } from '../constants/urls';
 
 const Home: React.FC = () => {
+  const { navigate } = useContext(NavContext);
 
   const [duelCode, setDuelCode] = useState<string>('');
   const [newRandomDuelCode, setNewRandomDuelCode] = useState<string>(uuidv4());
+  const [failedDuelJoin, setFailedDuelJoin] = useState<boolean>(false);
 
   const validateDuelCode = (): boolean => {
     if (duelCode && validateUuid(duelCode)) {
       return false
     }
     return true
+  }
+
+  const validateDuelAndJoin: MouseEventHandler<HTMLIonButtonElement> = async () => {
+    try {
+      const duelResponse = await axios.get(duelsURL + `/${duelCode}`, {
+        headers: {
+          'x-api-key': import.meta.env.VITE_REST_API_KEY
+        }
+      })
+      
+      if (duelResponse.data === 'Found Duel') {
+        setDuelCode('');
+        setFailedDuelJoin(false);
+        navigate(`/duel/${duelCode}`);
+      }
+    } catch {
+      setFailedDuelJoin(true);
+    }
   }
 
   useIonViewWillEnter(() => {
@@ -32,20 +55,20 @@ const Home: React.FC = () => {
       <IonGrid>
         <IonRow>
           <IonCol>
-            {/* Finish basic turn trade-off UI for Duel Mat. */}
-            {/* Have the backend processes the request to create and initialize a new duel, then display page when finished and implement websocket beginning with turn switching */}
-            {/* Model data for cards and duel sessions (How does the player get tracked?) */}
-            <IonButton routerLink={`/duel/${newRandomDuelCode}`}>Start Duel!</IonButton>
+            <IonButton routerLink={`/duel/${newRandomDuelCode}?create=true`}>Start Duel!</IonButton>
           </IonCol>
         </IonRow>
-        <IonRow className="duel-code-input" >
+        <IonRow className="duel-code-input">
           <IonCol>
             <IonInput label="Duel Code" label-placement="floating" fill="outline" placeholder="Enter duel code" type='text' onIonInput={changeEvent => changeEvent?.target?.value ? setDuelCode(changeEvent.target.value.toString()) : setDuelCode('')} />
           </IonCol>
         </IonRow>
         <IonRow>
           <IonCol>
-            <IonButton routerLink={`/duel/${duelCode}`} disabled={validateDuelCode()}>Join Duel!</IonButton>
+            <IonButton disabled={validateDuelCode()} onClick={(_) => validateDuelAndJoin(_)}>Join Duel!</IonButton>
+            {failedDuelJoin &&
+              <p style={{ color: 'red', textAlign: 'center' }}>Unable to find duel with provided Duel ID</p>
+            }
           </IonCol>
         </IonRow>
       </IonGrid>
