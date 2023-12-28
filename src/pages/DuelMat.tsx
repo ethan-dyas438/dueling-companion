@@ -7,6 +7,7 @@ import {
     IonFabList,
     IonGrid,
     IonIcon,
+    IonImg,
     IonLabel,
     IonLoading,
     IonPage,
@@ -38,7 +39,7 @@ const DuelMat: React.FC = () => {
   const [loadingDuel, setLoadingDuel] = useState<boolean>(true);
   const [activeWebSocket, setActiveWebSocket] = useState<boolean>(true);
   const [createdDuel, setCreatedDuel] = useState<boolean>(localStorage.getItem('createdDuel') === 'true' || false);
-  const [duel, setDuel] = useState(JSON.parse(localStorage.getItem('duel') || 'null'));
+  const [duel, setDuel] = useState<{[key: string]: any}>();
   const [turnActive, setTurnActive] = useState<boolean>(false);
   const [isCopyToastOpen, setIsCopyToastOpen] = useState<boolean>(false);
   const { sendJsonMessage, readyState } = useWebSocket(duelWebsocket, {
@@ -150,11 +151,14 @@ const DuelMat: React.FC = () => {
     }
     navigate('/home');
     setActiveWebSocket(false);
-    setDuel(null);
+    setDuel(undefined);
   };
 
+  // TODO: Add functionality for updating life points
+  // TODO: Start to create S3 resources and logic to store card pictures.
+
   return (
-    <IonPage id="duel-mat-page">
+    <IonPage id="duel-mat-page" style={{ overflowY: "scroll" }}>
       <IonLoading isOpen={loadingDuel} message="Loading Duel..."/>
 
       {duel?.duelData?.currentPlayer === "" ? 
@@ -178,7 +182,62 @@ const DuelMat: React.FC = () => {
       : 
         <IonGrid>
           <IonRow>
+            <IonCol><IonImg src="resources\yugiohCard.png" alt="Main Deck Slot"/></IonCol>
+            <IonCol><IonImg src="resources\placeholderSpellTrap.png" alt="Spell/Trap Card Slot"/></IonCol>
+            <IonCol><IonImg src="resources\placeholderSpellTrap.png" alt="Spell/Trap Card Slot"/></IonCol>
+            <IonCol><IonImg src="resources\placeholderSpellTrap.png" alt="Spell/Trap Card Slot"/></IonCol>
+            <IonCol><IonImg src="resources\placeholderSpellTrap.png" alt="Spell/Trap Card Slot"/></IonCol>
+            <IonCol><IonImg src="resources\placeholderSpellTrap.png" alt="Spell/Trap Card Slot"/></IonCol>
+            <IonCol><IonImg src="resources\yugiohCard.png" alt="Extra Deck Slot"/></IonCol>
+          </IonRow>
+          <IonRow>
+            <IonCol><IonImg src="resources\placeholderGraveyard.png" alt="Graveyard Slot"/></IonCol>
+            <IonCol><IonImg src="resources\placeholderMonster.png" alt="Monster Card Slot"/></IonCol>
+            <IonCol><IonImg src="resources\placeholderMonster.png" alt="Monster Card Slot"/></IonCol>
+            <IonCol><IonImg src="resources\placeholderMonster.png" alt="Monster Card Slot"/></IonCol>
+            <IonCol><IonImg src="resources\placeholderMonster.png" alt="Monster Card Slot"/></IonCol>
+            <IonCol><IonImg src="resources\placeholderMonster.png" alt="Monster Card Slot"/></IonCol>
+            <IonCol><IonImg src="resources\placeholderFieldZone.png" alt="Field Spell Slot"/></IonCol>
+          </IonRow>
+          <IonRow>
+            <IonCol style={{ height: "15rem" }}>
+              <IonImg style={{ height: "90%" }} src="resources\placeholderBanished.png" alt="Banished Slot"/>
+            </IonCol>
+            {/* For full Yu-Gi-Oh Game */}
+            {/* <IonCol><IonButton>Extra</IonButton></IonCol> */}
             <IonCol>
+              <IonLabel>Opponent's Life Points: {duel?.duelData.playerLifePoints.B}</IonLabel>
+            </IonCol>
+            <IonCol>
+              <IonLabel>Your Life Points: {duel?.duelData.playerLifePoints.A}</IonLabel>
+            </IonCol>
+            {/* For full Yu-Gi-Oh Game */}
+            {/* <IonCol><IonButton>Extra</IonButton></IonCol> */}
+            <IonCol style={{ height: "15rem" }}>
+              <IonImg style={{ height: "90%" }} src="resources\placeholderBanished.png" alt="Banished Slot"/>
+            </IonCol>
+          </IonRow>
+          <IonRow>
+            <IonCol><IonImg src="resources\placeholderFieldZone.png" alt="Field Spell Slot"/></IonCol>
+            <IonCol><IonImg src="resources\placeholderMonster.png" alt="Monster Card Slot"/></IonCol>
+            <IonCol><IonImg src="resources\placeholderMonster.png" alt="Monster Card Slot"/></IonCol>
+            <IonCol><IonImg src="resources\placeholderMonster.png" alt="Monster Card Slot"/></IonCol>
+            <IonCol><IonImg src="resources\placeholderMonster.png" alt="Monster Card Slot"/></IonCol>
+            <IonCol><IonImg src="resources\placeholderMonster.png" alt="Monster Card Slot"/></IonCol>
+            <IonCol><IonImg src="resources\placeholderGraveyard.png" alt="Graveyard Slot"/></IonCol>
+          </IonRow>
+          <IonRow>
+            <IonCol><IonImg src="resources\yugiohCard.png" alt="Extra Deck Slot"/></IonCol>
+            <IonCol><IonImg src="resources\placeholderSpellTrap.png" alt="Spell/Trap Card Slot"/></IonCol>
+            <IonCol><IonImg src="resources\placeholderSpellTrap.png" alt="Spell/Trap Card Slot"/></IonCol>
+            <IonCol><IonImg src="resources\placeholderSpellTrap.png" alt="Spell/Trap Card Slot"/></IonCol>
+            <IonCol><IonImg src="resources\placeholderSpellTrap.png" alt="Spell/Trap Card Slot"/></IonCol>
+            <IonCol><IonImg src="resources\placeholderSpellTrap.png" alt="Spell/Trap Card Slot"/></IonCol>
+            <IonCol><IonImg src="resources\yugiohCard.png" alt="Main Deck Slot"/></IonCol>
+          </IonRow>
+          <IonRow style={{ paddingTop: "2rem" }}>
+            <IonCol>
+              <div style={{ border: "solid white 1px", marginBottom: "2rem" }} />
               <IonLabel style={{ textAlign: 'center' }}>{turnActive ? 'Your Turn' : 'Waiting on other player...'}</IonLabel>
             </IonCol>
           </IonRow>
@@ -190,7 +249,7 @@ const DuelMat: React.FC = () => {
                 disabled={!turnActive}
                 onClick={
                   () =>
-                    updateCurrentPlayer(duel.duelData, duelId, duel.duelData.currentPlayer === PLAYERS.A ? PLAYERS.B : PLAYERS.A, sendJsonMessage)
+                    updateCurrentPlayer(duel?.duelData, duelId, duel?.duelData.currentPlayer === PLAYERS.A ? PLAYERS.B : PLAYERS.A, sendJsonMessage)
                 }
               >
                 End Turn
@@ -200,22 +259,22 @@ const DuelMat: React.FC = () => {
         </IonGrid>
       }
 
-      <IonFab slot="fixed" horizontal="end" vertical="bottom">
+      <IonFab horizontal="end" vertical="top">
         <IonFabButton>
           <IonIcon icon={add}></IonIcon>
         </IonFabButton>
-        <IonFabList side="top">
-          <IonFabButton onClick={() => exitDuel()}>
-            <IonIcon  icon={exitOutline}></IonIcon>
-          </IonFabButton>
-          <IonFabButton onClick={() => window.location.reload()}>
-            <IonIcon  icon={refresh}></IonIcon>
-          </IonFabButton>
-          <IonFabButton onClick={() => {
+        <IonFabList side="bottom">
+        <IonFabButton onClick={() => {
             copyDuelId();
             setIsCopyToastOpen(true);
           }}>
             <IonIcon  icon={clipboardOutline}></IonIcon>
+          </IonFabButton>
+          <IonFabButton onClick={() => window.location.reload()}>
+            <IonIcon  icon={refresh}></IonIcon>
+          </IonFabButton>
+          <IonFabButton onClick={() => exitDuel()}>
+            <IonIcon  icon={exitOutline}></IonIcon>
           </IonFabButton>
         </IonFabList>
       </IonFab>
