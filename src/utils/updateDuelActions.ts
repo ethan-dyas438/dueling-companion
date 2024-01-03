@@ -1,13 +1,13 @@
 import { SendJsonMessage } from "react-use-websocket/dist/lib/types";
 import { DUEL_ACTION } from "../constants/duelActions";
 
-export const updateReadyStatus = (createdDuel: boolean, duelData: {[key: string]: any}, duelId: string, sendWebsocketAction: SendJsonMessage) => {
-    let updatedDuelData = {...duelData};
+export const updateReadyStatus = (createdDuel: boolean, duelId: string, sendWebsocketAction: SendJsonMessage) => {
+    let updatedDuelData;
 
     if (createdDuel) {
-        updatedDuelData.playerReady.A = true;
+        updatedDuelData = { playerReady: { A: true } };
     } else {
-        updatedDuelData.playerReady.B = true;
+        updatedDuelData = { playerReady: { B: true } };
     }
 
     sendWebsocketAction({
@@ -16,11 +16,9 @@ export const updateReadyStatus = (createdDuel: boolean, duelData: {[key: string]
     });
 };
 
-export const updateCurrentPlayer = (duelData: {[key: string]: any}, duelId: string, newPlayer: string, sendWebsocketAction: SendJsonMessage) => {
-    let updatedDuelData = {...duelData, currentPlayer: newPlayer };
-
+export const updateCurrentPlayer = (duelId: string, newPlayer: string, sendWebsocketAction: SendJsonMessage) => {
     sendWebsocketAction({
         action: DUEL_ACTION.UPDATE,
-        payload: { duelId, duelData: updatedDuelData }
+        payload: { duelId, duelData: { currentPlayer: newPlayer } }
     });
 };
