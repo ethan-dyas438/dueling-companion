@@ -16,6 +16,13 @@ export const updateReadyStatus = (createdDuel: boolean, duelId: string, sendWebs
     });
 };
 
+export const updateLifePoints = (updatedDuelData: { [key: string]: any }, duelId: string, sendWebsocketAction: SendJsonMessage) => {
+    sendWebsocketAction({
+        action: DUEL_ACTION.UPDATE,
+        payload: { duelId, duelData: updatedDuelData }
+    });
+};
+
 export const updateCurrentPlayer = (duelId: string, newPlayer: string, sendWebsocketAction: SendJsonMessage) => {
     sendWebsocketAction({
         action: DUEL_ACTION.UPDATE,

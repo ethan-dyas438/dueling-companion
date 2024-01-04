@@ -55,7 +55,7 @@ const Home: React.FC = () => {
       <IonGrid>
         <IonRow>
           <IonCol>
-            <IonButton routerLink={`/duel/${newRandomDuelCode}?create=true`}>Start Duel!</IonButton>
+            <IonButton routerLink={`/duel/${newRandomDuelCode}?create=true`} onClick={(_) => localStorage.clear()}>Start Duel!</IonButton>
           </IonCol>
         </IonRow>
         <IonRow className="duel-code-input">
