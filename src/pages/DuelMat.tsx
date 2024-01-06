@@ -29,6 +29,7 @@ import { getPlayerAttribute } from '../utils/getPlayerDuelData';
 import { updateCurrentPlayer, updateReadyStatus } from '../utils/updateDuelActions';
 import { Clipboard } from '@capacitor/clipboard';
 import LifePointAlert from '../components/LifePointAlert';
+import { useCardPhotos } from '../hooks/useCardPhotos';
 
 enum PLAYERS {
   A = 'A',
@@ -39,6 +40,7 @@ const DuelMat: React.FC = () => {
   const { id: duelId } = useParams<{ id: string }>();
   let create = new URLSearchParams(location.search).get('create');
   const { navigate } = useContext(NavContext);
+  const { takePhoto } = useCardPhotos();
 
   const [loadingDuel, setLoadingDuel] = useState<boolean>(true);
   const [activeWebSocket, setActiveWebSocket] = useState<boolean>(true);
@@ -231,21 +233,21 @@ const DuelMat: React.FC = () => {
               </IonCol>
             </IonRow>
             <IonRow>
-              <IonCol><IonImg src="resources\placeholderFieldZone.png" alt="Field Spell Slot" /></IonCol>
-              <IonCol><IonImg src="resources\placeholderMonster.png" alt="Monster Card Slot" /></IonCol>
-              <IonCol><IonImg src="resources\placeholderMonster.png" alt="Monster Card Slot" /></IonCol>
-              <IonCol><IonImg src="resources\placeholderMonster.png" alt="Monster Card Slot" /></IonCol>
-              <IonCol><IonImg src="resources\placeholderMonster.png" alt="Monster Card Slot" /></IonCol>
-              <IonCol><IonImg src="resources\placeholderMonster.png" alt="Monster Card Slot" /></IonCol>
+              <IonCol><IonImg src="resources\placeholderFieldZone.png" alt="Field Spell Slot" onClick={() => takePhoto('FieldSpell', createdDuel, duel.duelId, sendJsonMessage)} /></IonCol>
+              <IonCol><IonImg src="resources\placeholderMonster.png" alt="Monster Card Slot" onClick={() => takePhoto('MonsterOne', createdDuel, duel.duelId, sendJsonMessage)} /></IonCol>
+              <IonCol><IonImg src="resources\placeholderMonster.png" alt="Monster Card Slot" onClick={() => takePhoto('MonsterTwo', createdDuel, duel.duelId, sendJsonMessage)} /></IonCol>
+              <IonCol><IonImg src="resources\placeholderMonster.png" alt="Monster Card Slot" onClick={() => takePhoto('MonsterThree', createdDuel, duel.duelId, sendJsonMessage)} /></IonCol>
+              <IonCol><IonImg src="resources\placeholderMonster.png" alt="Monster Card Slot" onClick={() => takePhoto('MonsterFour', createdDuel, duel.duelId, sendJsonMessage)} /></IonCol>
+              <IonCol><IonImg src="resources\placeholderMonster.png" alt="Monster Card Slot" onClick={() => takePhoto('MonsterFive', createdDuel, duel.duelId, sendJsonMessage)} /></IonCol>
               <IonCol><IonImg src="resources\placeholderGraveyard.png" alt="Graveyard Slot" /></IonCol>
             </IonRow>
             <IonRow>
               <IonCol><IonImg src="resources\yugiohCard.png" alt="Extra Deck Slot" /></IonCol>
-              <IonCol><IonImg src="resources\placeholderSpellTrap.png" alt="Spell/Trap Card Slot" /></IonCol>
-              <IonCol><IonImg src="resources\placeholderSpellTrap.png" alt="Spell/Trap Card Slot" /></IonCol>
-              <IonCol><IonImg src="resources\placeholderSpellTrap.png" alt="Spell/Trap Card Slot" /></IonCol>
-              <IonCol><IonImg src="resources\placeholderSpellTrap.png" alt="Spell/Trap Card Slot" /></IonCol>
-              <IonCol><IonImg src="resources\placeholderSpellTrap.png" alt="Spell/Trap Card Slot" /></IonCol>
+              <IonCol><IonImg src="resources\placeholderSpellTrap.png" alt="Spell/Trap Card Slot" onClick={() => takePhoto('SpellTrapOne', createdDuel, duel.duelId, sendJsonMessage)} /></IonCol>
+              <IonCol><IonImg src="resources\placeholderSpellTrap.png" alt="Spell/Trap Card Slot" onClick={() => takePhoto('SpellTrapTwo', createdDuel, duel.duelId, sendJsonMessage)} /></IonCol>
+              <IonCol><IonImg src="resources\placeholderSpellTrap.png" alt="Spell/Trap Card Slot" onClick={() => takePhoto('SpellTrapThree', createdDuel, duel.duelId, sendJsonMessage)} /></IonCol>
+              <IonCol><IonImg src="resources\placeholderSpellTrap.png" alt="Spell/Trap Card Slot" onClick={() => takePhoto('SpellTrapFour', createdDuel, duel.duelId, sendJsonMessage)} /></IonCol>
+              <IonCol><IonImg src="resources\placeholderSpellTrap.png" alt="Spell/Trap Card Slot" onClick={() => takePhoto('SpellTrapFive', createdDuel, duel.duelId, sendJsonMessage)} /></IonCol>
               <IonCol><IonImg src="resources\yugiohCard.png" alt="Main Deck Slot" /></IonCol>
             </IonRow>
             {/* <IonRow style={{ paddingTop: "2rem" }}>

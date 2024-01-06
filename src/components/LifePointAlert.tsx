@@ -43,7 +43,7 @@ const LifePointAlert: React.FC<LifePointAlertProps> = ({ isOpen, setIsOpen, duel
             }
         }
 
-        updateLifePoints(updatedDuelData, duel.duelId, websocketAction)
+        updateLifePoints(updatedDuelData, duel.duelId, websocketAction);
         setIsOpen(false);
     }
 
