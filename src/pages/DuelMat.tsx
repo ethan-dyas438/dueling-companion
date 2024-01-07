@@ -9,14 +9,12 @@ import {
   IonFooter,
   IonGrid,
   IonIcon,
-  IonImg,
   IonLabel,
   IonLoading,
   IonPage,
   IonRow,
   IonToast,
   NavContext,
-  useIonAlert,
   useIonViewWillEnter,
 } from '@ionic/react';
 import { add, checkmarkCircle, clipboardOutline, diceOutline, exitOutline, refresh } from 'ionicons/icons';
@@ -26,10 +24,10 @@ import useWebSocket, { ReadyState } from 'react-use-websocket';
 import { duelWebsocket } from '../constants/urls';
 import { DUEL_ACTION } from '../constants/duelActions';
 import { getPlayerAttribute } from '../utils/getPlayerDuelData';
-import { updateCurrentPlayer, updateReadyStatus } from '../utils/updateDuelActions';
+import { updateReadyStatus } from '../utils/updateDuelActions';
 import { Clipboard } from '@capacitor/clipboard';
 import LifePointAlert from '../components/LifePointAlert';
-import { useCardPhotos } from '../hooks/useCardPhotos';
+import CardImage from '../components/CardImage';
 
 enum PLAYERS {
   A = 'A',
@@ -40,7 +38,7 @@ const DuelMat: React.FC = () => {
   const { id: duelId } = useParams<{ id: string }>();
   let create = new URLSearchParams(location.search).get('create');
   const { navigate } = useContext(NavContext);
-  const { takePhoto } = useCardPhotos();
+
 
   const [loadingDuel, setLoadingDuel] = useState<boolean>(true);
   const [activeWebSocket, setActiveWebSocket] = useState<boolean>(true);
@@ -92,6 +90,7 @@ const DuelMat: React.FC = () => {
       } else {
         const localDuel = JSON.parse(localStorage.getItem('duel') || 'null');
         const oldConnectionId = localStorage.getItem('oldConnectionId');
+
         if (oldConnectionId && localDuel && localDuel.duelId === duelId) {
           sendJsonMessage({
             action: DUEL_ACTION.REJOIN,
@@ -163,7 +162,277 @@ const DuelMat: React.FC = () => {
     setDuel(JSON.parse('null'));
   };
 
-  // TODO: Start to create S3 resources and logic to store card pictures.
+  const renderOponentCards = () => {
+    const oponentPlayer = createdDuel ? 'playerB' : 'playerA';
+    const cardsKey = `${oponentPlayer}Cards`;
+
+    return (
+      <>
+        <IonRow>
+          <IonCol><CardImage placeholderImage="resources\yugiohCard.png" altText="Main Deck Slot" /></IonCol>
+          <IonCol>
+            <CardImage
+              placeholderImage="resources\placeholderSpellTrap.png"
+              altText="Spell/Trap Card Slot"
+              cardsKey={cardsKey}
+              fullCardKey={`${oponentPlayer}SpellTrapFive`}
+              duel={duel}
+            />
+          </IonCol>
+          <IonCol>
+            <CardImage
+              placeholderImage="resources\placeholderSpellTrap.png"
+              altText="Spell/Trap Card Slot"
+              cardsKey={cardsKey}
+              fullCardKey={`${oponentPlayer}SpellTrapFour`}
+              duel={duel}
+            />
+          </IonCol>
+          <IonCol>
+            <CardImage
+              placeholderImage="resources\placeholderSpellTrap.png"
+              altText="Spell/Trap Card Slot"
+              cardsKey={cardsKey}
+              fullCardKey={`${oponentPlayer}SpellTrapThree`}
+              duel={duel}
+            />
+          </IonCol>
+          <IonCol>
+            <CardImage
+              placeholderImage="resources\placeholderSpellTrap.png"
+              altText="Spell/Trap Card Slot"
+              cardsKey={cardsKey}
+              fullCardKey={`${oponentPlayer}SpellTrapTwo`}
+              duel={duel}
+            />
+          </IonCol>
+          <IonCol>
+            <CardImage
+              placeholderImage="resources\placeholderSpellTrap.png"
+              altText="Spell/Trap Card Slot"
+              cardsKey={cardsKey}
+              fullCardKey={`${oponentPlayer}SpellTrapOne`}
+              duel={duel}
+            />
+          </IonCol>
+          <IonCol>
+            <CardImage placeholderImage="resources\yugiohCard.png" altText="Extra Deck Slot" /></IonCol>
+        </IonRow>
+        <IonRow>
+          <IonCol><CardImage placeholderImage="resources\placeholderGraveyard.png" altText="Graveyard Slot" /></IonCol>
+          <IonCol>
+            <CardImage
+              placeholderImage="resources\placeholderMonster.png"
+              altText="Monster Card Slot"
+              cardsKey={cardsKey}
+              fullCardKey={`${oponentPlayer}MonsterFive`}
+              duel={duel}
+            />
+          </IonCol>
+          <IonCol>
+            <CardImage
+              placeholderImage="resources\placeholderMonster.png"
+              altText="Monster Card Slot"
+              cardsKey={cardsKey}
+              fullCardKey={`${oponentPlayer}MonsterFour`}
+              duel={duel}
+            />
+          </IonCol>
+          <IonCol>
+            <CardImage
+              placeholderImage="resources\placeholderMonster.png"
+              altText="Monster Card Slot"
+              cardsKey={cardsKey}
+              fullCardKey={`${oponentPlayer}MonsterThree`}
+              duel={duel}
+            />
+          </IonCol>
+          <IonCol>
+            <CardImage
+              placeholderImage="resources\placeholderMonster.png"
+              altText="Monster Card Slot"
+              cardsKey={cardsKey}
+              fullCardKey={`${oponentPlayer}MonsterTwo`}
+              duel={duel}
+            />
+          </IonCol>
+          <IonCol>
+            <CardImage
+              placeholderImage="resources\placeholderMonster.png"
+              altText="Monster Card Slot"
+              cardsKey={cardsKey}
+              fullCardKey={`${oponentPlayer}MonsterOne`}
+              duel={duel}
+            />
+          </IonCol>
+          <IonCol>
+            <CardImage
+              placeholderImage="resources\placeholderFieldZone.png"
+              altText="Field Spell Slot"
+              cardsKey={cardsKey}
+              fullCardKey={`${oponentPlayer}FieldSpell`}
+              duel={duel}
+            />
+          </IonCol>
+        </IonRow>
+      </>
+    );
+  }
+
+  const renderYourCards = () => {
+    const oponentPlayer = createdDuel ? 'playerA' : 'playerB';
+    const cardsKey = `${oponentPlayer}Cards`;
+
+    return (
+      <>
+        <IonRow>
+          <IonCol>
+            <CardImage
+              placeholderImage="resources\placeholderFieldZone.png"
+              altText="Field Spell Slot"
+              cardsKey={cardsKey}
+              fullCardKey={`${oponentPlayer}FieldSpell`}
+              duel={duel}
+              shortCardKey="FieldSpell"
+              createdDuel={createdDuel}
+              cardOwner
+            />
+          </IonCol>
+          <IonCol>
+            <CardImage
+              placeholderImage="resources\placeholderMonster.png"
+              altText="Monster Card Slot"
+              cardsKey={cardsKey}
+              fullCardKey={`${oponentPlayer}MonsterOne`}
+              duel={duel}
+              shortCardKey="MonsterOne"
+              createdDuel={createdDuel}
+              cardOwner
+            />
+          </IonCol>
+          <IonCol>
+            <CardImage
+              placeholderImage="resources\placeholderMonster.png"
+              altText="Monster Card Slot"
+              cardsKey={cardsKey}
+              fullCardKey={`${oponentPlayer}MonsterTwo`}
+              duel={duel}
+              shortCardKey="MonsterTwo"
+              createdDuel={createdDuel}
+              cardOwner
+            />
+          </IonCol>
+          <IonCol>
+            <CardImage
+              placeholderImage="resources\placeholderMonster.png"
+              altText="Monster Card Slot"
+              cardsKey={cardsKey}
+              fullCardKey={`${oponentPlayer}MonsterThree`}
+              duel={duel}
+              shortCardKey="MonsterThree"
+              createdDuel={createdDuel}
+              cardOwner
+            />
+          </IonCol>
+          <IonCol>
+            <CardImage
+              placeholderImage="resources\placeholderMonster.png"
+              altText="Monster Card Slot"
+              cardsKey={cardsKey}
+              fullCardKey={`${oponentPlayer}MonsterFour`}
+              duel={duel}
+              shortCardKey="MonsterFour"
+              createdDuel={createdDuel}
+              cardOwner
+            />
+          </IonCol>
+          <IonCol>
+            <CardImage
+              placeholderImage="resources\placeholderMonster.png"
+              altText="Monster Card Slot"
+              cardsKey={cardsKey}
+              fullCardKey={`${oponentPlayer}MonsterFive`}
+              duel={duel}
+              shortCardKey="MonsterFive"
+              createdDuel={createdDuel}
+              cardOwner
+            />
+          </IonCol>
+          <IonCol><CardImage placeholderImage="resources\placeholderGraveyard.png" altText="Graveyard Slot" /></IonCol>
+        </IonRow>
+        <IonRow>
+          <IonCol><CardImage placeholderImage="resources\yugiohCard.png" altText="Extra Deck Slot" /></IonCol>
+          <IonCol>
+            <CardImage
+              placeholderImage="resources\placeholderSpellTrap.png"
+              altText="Spell/Trap Card Slot"
+              cardsKey={cardsKey}
+              fullCardKey={`${oponentPlayer}SpellTrapOne`}
+              duel={duel}
+              shortCardKey="SpellTrapOne"
+              createdDuel={createdDuel}
+              cardOwner
+            />
+          </IonCol>
+          <IonCol>
+            <CardImage
+              placeholderImage="resources\placeholderSpellTrap.png"
+              altText="Spell/Trap Card Slot"
+              cardsKey={cardsKey}
+              fullCardKey={`${oponentPlayer}SpellTrapTwo`}
+              duel={duel}
+              shortCardKey="SpellTrapTwo"
+              createdDuel={createdDuel}
+              cardOwner
+            />
+          </IonCol>
+          <IonCol>
+            <CardImage
+              placeholderImage="resources\placeholderSpellTrap.png"
+              altText="Spell/Trap Card Slot"
+              cardsKey={cardsKey}
+              fullCardKey={`${oponentPlayer}SpellTrapThree`}
+              duel={duel}
+              shortCardKey="SpellTrapThree"
+              createdDuel={createdDuel}
+              cardOwner
+            />
+          </IonCol>
+          <IonCol>
+            <CardImage
+              placeholderImage="resources\placeholderSpellTrap.png"
+              altText="Spell/Trap Card Slot"
+              cardsKey={cardsKey}
+              fullCardKey={`${oponentPlayer}SpellTrapFour`}
+              duel={duel}
+              shortCardKey="SpellTrapFour"
+              createdDuel={createdDuel}
+              cardOwner
+            />
+          </IonCol>
+          <IonCol>
+            <CardImage
+              placeholderImage="resources\placeholderSpellTrap.png"
+              altText="Spell/Trap Card Slot"
+              cardsKey={cardsKey}
+              fullCardKey={`${oponentPlayer}SpellTrapFive`}
+              duel={duel}
+              shortCardKey="SpellTrapFive"
+              createdDuel={createdDuel}
+              cardOwner
+            />
+          </IonCol>
+          <IonCol><CardImage placeholderImage="resources\yugiohCard.png" altText="Main Deck Slot" /></IonCol>
+        </IonRow>
+      </>
+    );
+  }
+
+  // TODO: Start on adding card actions. The card data model will need to be updated.
+  // TODO: Implement enlarged image viewer. Could be a modal for single images, then for graveyard and banished it
+  //      could be a carousel (with the graveyard and banished views enabling actions).
+  // TODO: Look into issue, where if a image upload is cancelled then a different slot is selected the image still goes to the originally
+  //      selected slot.
 
   return (
     <IonPage id="duel-mat-page" style={{ overflowY: "scroll" }}>
@@ -191,30 +460,21 @@ const DuelMat: React.FC = () => {
           </IonGrid>
           :
           <IonGrid>
-            <IonRow>
-              <IonCol><IonImg src="resources\yugiohCard.png" alt="Main Deck Slot" /></IonCol>
-              <IonCol><IonImg src="resources\placeholderSpellTrap.png" alt="Spell/Trap Card Slot" /></IonCol>
-              <IonCol><IonImg src="resources\placeholderSpellTrap.png" alt="Spell/Trap Card Slot" /></IonCol>
-              <IonCol><IonImg src="resources\placeholderSpellTrap.png" alt="Spell/Trap Card Slot" /></IonCol>
-              <IonCol><IonImg src="resources\placeholderSpellTrap.png" alt="Spell/Trap Card Slot" /></IonCol>
-              <IonCol><IonImg src="resources\placeholderSpellTrap.png" alt="Spell/Trap Card Slot" /></IonCol>
-              <IonCol><IonImg src="resources\yugiohCard.png" alt="Extra Deck Slot" /></IonCol>
-            </IonRow>
-            <IonRow>
-              <IonCol><IonImg src="resources\placeholderGraveyard.png" alt="Graveyard Slot" /></IonCol>
-              <IonCol><IonImg src="resources\placeholderMonster.png" alt="Monster Card Slot" /></IonCol>
-              <IonCol><IonImg src="resources\placeholderMonster.png" alt="Monster Card Slot" /></IonCol>
-              <IonCol><IonImg src="resources\placeholderMonster.png" alt="Monster Card Slot" /></IonCol>
-              <IonCol><IonImg src="resources\placeholderMonster.png" alt="Monster Card Slot" /></IonCol>
-              <IonCol><IonImg src="resources\placeholderMonster.png" alt="Monster Card Slot" /></IonCol>
-              <IonCol><IonImg src="resources\placeholderFieldZone.png" alt="Field Spell Slot" /></IonCol>
-            </IonRow>
+            {renderOponentCards()}
             <IonRow>
               <IonCol style={{ height: "15rem" }}>
-                <IonImg style={{ height: "90%" }} src="resources\placeholderBanished.png" alt="Banished Slot" />
+                <CardImage style={{ height: "90%" }} placeholderImage="resources\placeholderBanished.png" altText="Banished Slot" />
               </IonCol>
               <IonCol style={{ height: "15rem" }}>
-                <IonImg style={{ height: "90%" }} src="resources\placeholderExtraMonster.png" alt="Extra Monster Card Slot" />
+                <CardImage
+                  style={{ height: "90%" }}
+                  placeholderImage="resources\placeholderExtraMonster.png"
+                  altText="Extra Monster Card Slot"
+                  shortCardKey="extraMonsterTwo"
+                  duel={duel}
+                  createdDuel={createdDuel}
+                  cardOwner
+                />
               </IonCol>
               <IonCol>
                 <IonLabel>Their Life Points: {createdDuel ? duel?.duelData.playerLifePoints.B : duel?.duelData.playerLifePoints.A}</IonLabel>
@@ -226,30 +486,21 @@ const DuelMat: React.FC = () => {
                 </IonButton>
               </IonCol>
               <IonCol style={{ height: "15rem" }}>
-                <IonImg style={{ height: "90%" }} src="resources\placeholderExtraMonster.png" alt="Extra Monster Card Slot" />
+                <CardImage
+                  style={{ height: "90%" }}
+                  placeholderImage="resources\placeholderExtraMonster.png"
+                  altText="Extra Monster Card Slot"
+                  shortCardKey="extraMonsterOne"
+                  duel={duel}
+                  createdDuel={createdDuel}
+                  cardOwner
+                />
               </IonCol>
               <IonCol style={{ height: "15rem" }}>
-                <IonImg style={{ height: "90%" }} src="resources\placeholderBanished.png" alt="Banished Slot" />
+                <CardImage style={{ height: "90%" }} placeholderImage="resources\placeholderBanished.png" altText="Banished Slot" />
               </IonCol>
             </IonRow>
-            <IonRow>
-              <IonCol><IonImg src="resources\placeholderFieldZone.png" alt="Field Spell Slot" onClick={() => takePhoto('FieldSpell', createdDuel, duel.duelId, sendJsonMessage)} /></IonCol>
-              <IonCol><IonImg src="resources\placeholderMonster.png" alt="Monster Card Slot" onClick={() => takePhoto('MonsterOne', createdDuel, duel.duelId, sendJsonMessage)} /></IonCol>
-              <IonCol><IonImg src="resources\placeholderMonster.png" alt="Monster Card Slot" onClick={() => takePhoto('MonsterTwo', createdDuel, duel.duelId, sendJsonMessage)} /></IonCol>
-              <IonCol><IonImg src="resources\placeholderMonster.png" alt="Monster Card Slot" onClick={() => takePhoto('MonsterThree', createdDuel, duel.duelId, sendJsonMessage)} /></IonCol>
-              <IonCol><IonImg src="resources\placeholderMonster.png" alt="Monster Card Slot" onClick={() => takePhoto('MonsterFour', createdDuel, duel.duelId, sendJsonMessage)} /></IonCol>
-              <IonCol><IonImg src="resources\placeholderMonster.png" alt="Monster Card Slot" onClick={() => takePhoto('MonsterFive', createdDuel, duel.duelId, sendJsonMessage)} /></IonCol>
-              <IonCol><IonImg src="resources\placeholderGraveyard.png" alt="Graveyard Slot" /></IonCol>
-            </IonRow>
-            <IonRow>
-              <IonCol><IonImg src="resources\yugiohCard.png" alt="Extra Deck Slot" /></IonCol>
-              <IonCol><IonImg src="resources\placeholderSpellTrap.png" alt="Spell/Trap Card Slot" onClick={() => takePhoto('SpellTrapOne', createdDuel, duel.duelId, sendJsonMessage)} /></IonCol>
-              <IonCol><IonImg src="resources\placeholderSpellTrap.png" alt="Spell/Trap Card Slot" onClick={() => takePhoto('SpellTrapTwo', createdDuel, duel.duelId, sendJsonMessage)} /></IonCol>
-              <IonCol><IonImg src="resources\placeholderSpellTrap.png" alt="Spell/Trap Card Slot" onClick={() => takePhoto('SpellTrapThree', createdDuel, duel.duelId, sendJsonMessage)} /></IonCol>
-              <IonCol><IonImg src="resources\placeholderSpellTrap.png" alt="Spell/Trap Card Slot" onClick={() => takePhoto('SpellTrapFour', createdDuel, duel.duelId, sendJsonMessage)} /></IonCol>
-              <IonCol><IonImg src="resources\placeholderSpellTrap.png" alt="Spell/Trap Card Slot" onClick={() => takePhoto('SpellTrapFive', createdDuel, duel.duelId, sendJsonMessage)} /></IonCol>
-              <IonCol><IonImg src="resources\yugiohCard.png" alt="Main Deck Slot" /></IonCol>
-            </IonRow>
+            {renderYourCards()}
             {/* <IonRow style={{ paddingTop: "2rem" }}>
               <IonCol>
                 <div style={{ border: "solid white 1px", marginBottom: "2rem" }} />
