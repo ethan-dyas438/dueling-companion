@@ -28,6 +28,8 @@ import { updateReadyStatus } from '../utils/updateDuelActions';
 import { Clipboard } from '@capacitor/clipboard';
 import LifePointAlert from '../components/LifePointAlert';
 import CardImage from '../components/CardImage';
+import CardActions from '../components/CardActions';
+import { CARD_ACTIONS } from '../constants/cardActions';
 
 enum PLAYERS {
   A = 'A',
@@ -47,6 +49,8 @@ const DuelMat: React.FC = () => {
   const [turnActive, setTurnActive] = useState<boolean>(false);
   const [diceResult, setDiceResult] = useState<number>(0);
   const [isLPAlertOpen, setIsLPAlertOpen] = useState<boolean>(false);
+  const [isCardActionsOpen, setIsCardActionsOpen] = useState<boolean>(false);
+  const [currentCardActions, setCurrentCardActions] = useState<CARD_ACTIONS[]>([]);
   const [isDiceToastOpen, setIsDiceToastOpen] = useState<boolean>(false);
   const [isCopyToastOpen, setIsCopyToastOpen] = useState<boolean>(false);
   const { sendJsonMessage, readyState } = useWebSocket(duelWebsocket, {
@@ -148,6 +152,12 @@ const DuelMat: React.FC = () => {
         string: duelId
       });
     }
+  };
+
+  const handleCardActionsOpen = (cardData: { [key: string]: any }) => {
+    // TODO: Use the cardData to set the card actions
+    setCurrentCardActions([]);
+    setIsCardActionsOpen(true);
   };
 
   const exitDuel = () => {
@@ -296,6 +306,7 @@ const DuelMat: React.FC = () => {
               shortCardKey="FieldSpell"
               createdDuel={createdDuel}
               cardOwner
+              handleCardActionsOpen={handleCardActionsOpen}
             />
           </IonCol>
           <IonCol>
@@ -308,6 +319,7 @@ const DuelMat: React.FC = () => {
               shortCardKey="MonsterOne"
               createdDuel={createdDuel}
               cardOwner
+              handleCardActionsOpen={handleCardActionsOpen}
             />
           </IonCol>
           <IonCol>
@@ -320,6 +332,7 @@ const DuelMat: React.FC = () => {
               shortCardKey="MonsterTwo"
               createdDuel={createdDuel}
               cardOwner
+              handleCardActionsOpen={handleCardActionsOpen}
             />
           </IonCol>
           <IonCol>
@@ -332,6 +345,7 @@ const DuelMat: React.FC = () => {
               shortCardKey="MonsterThree"
               createdDuel={createdDuel}
               cardOwner
+              handleCardActionsOpen={handleCardActionsOpen}
             />
           </IonCol>
           <IonCol>
@@ -344,6 +358,7 @@ const DuelMat: React.FC = () => {
               shortCardKey="MonsterFour"
               createdDuel={createdDuel}
               cardOwner
+              handleCardActionsOpen={handleCardActionsOpen}
             />
           </IonCol>
           <IonCol>
@@ -356,6 +371,7 @@ const DuelMat: React.FC = () => {
               shortCardKey="MonsterFive"
               createdDuel={createdDuel}
               cardOwner
+              handleCardActionsOpen={handleCardActionsOpen}
             />
           </IonCol>
           <IonCol><CardImage placeholderImage="resources\placeholderGraveyard.png" altText="Graveyard Slot" /></IonCol>
@@ -372,6 +388,7 @@ const DuelMat: React.FC = () => {
               shortCardKey="SpellTrapOne"
               createdDuel={createdDuel}
               cardOwner
+              handleCardActionsOpen={handleCardActionsOpen}
             />
           </IonCol>
           <IonCol>
@@ -384,6 +401,7 @@ const DuelMat: React.FC = () => {
               shortCardKey="SpellTrapTwo"
               createdDuel={createdDuel}
               cardOwner
+              handleCardActionsOpen={handleCardActionsOpen}
             />
           </IonCol>
           <IonCol>
@@ -396,6 +414,7 @@ const DuelMat: React.FC = () => {
               shortCardKey="SpellTrapThree"
               createdDuel={createdDuel}
               cardOwner
+              handleCardActionsOpen={handleCardActionsOpen}
             />
           </IonCol>
           <IonCol>
@@ -408,6 +427,7 @@ const DuelMat: React.FC = () => {
               shortCardKey="SpellTrapFour"
               createdDuel={createdDuel}
               cardOwner
+              handleCardActionsOpen={handleCardActionsOpen}
             />
           </IonCol>
           <IonCol>
@@ -420,6 +440,7 @@ const DuelMat: React.FC = () => {
               shortCardKey="SpellTrapFive"
               createdDuel={createdDuel}
               cardOwner
+              handleCardActionsOpen={handleCardActionsOpen}
             />
           </IonCol>
           <IonCol><CardImage placeholderImage="resources\yugiohCard.png" altText="Main Deck Slot" /></IonCol>
@@ -438,6 +459,7 @@ const DuelMat: React.FC = () => {
     <IonPage id="duel-mat-page" style={{ overflowY: "scroll" }}>
       <IonLoading isOpen={loadingDuel} message="Loading Duel..." />
       <LifePointAlert isOpen={isLPAlertOpen} setIsOpen={setIsLPAlertOpen} duel={duel} createdDuel={createdDuel} websocketAction={sendJsonMessage} />
+      <CardActions isOpen={isCardActionsOpen} setIsOpen={setIsCardActionsOpen} cardActions={currentCardActions} />
 
       <IonContent>
         {duel?.duelData?.currentPlayer === "" ?
@@ -474,6 +496,7 @@ const DuelMat: React.FC = () => {
                   duel={duel}
                   createdDuel={createdDuel}
                   cardOwner
+                  handleCardActionsOpen={handleCardActionsOpen}
                 />
               </IonCol>
               <IonCol>
@@ -494,6 +517,7 @@ const DuelMat: React.FC = () => {
                   duel={duel}
                   createdDuel={createdDuel}
                   cardOwner
+                  handleCardActionsOpen={handleCardActionsOpen}
                 />
               </IonCol>
               <IonCol style={{ height: "15rem" }}>

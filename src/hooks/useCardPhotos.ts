@@ -14,7 +14,7 @@ export function useCardPhotos() {
             
         });
 
-        if (photo.base64String) { // TODO: Verify the photo format on the backend to enforce S3 content type and thus what the client will see.
+        if (photo.base64String) { // TODO: Display an alert for player to choose initial position of the card
             await updateCardPhoto(createdDuel, cardSlot, photo, duelId);
         }
     };

@@ -11,6 +11,7 @@ interface CardImageProps {
     cardOwner?: boolean;
     cardsKey?: string;
     style?: { [key: string]: any };
+    handleCardActionsOpen?: Function;
 }
 
 const CardImage: React.FC<CardImageProps> = ({
@@ -22,17 +23,10 @@ const CardImage: React.FC<CardImageProps> = ({
     placeholderImage,
     cardOwner,
     cardsKey,
-    style
+    style,
+    handleCardActionsOpen,
 }) => {
     const { takePhoto } = useCardPhotos();
-
-    const handleCardClick = () => {
-        // TODO: Once an image is present for the slot, then it must be moved before another card photo can be added.
-        if (cardOwner && shortCardKey && createdDuel !== undefined && duel && duel.duelId) {
-            takePhoto(shortCardKey, createdDuel, duel.duelId);
-        }
-    };
-
     let cardImage = placeholderImage;
 
     if (duel && cardsKey && fullCardKey && duel.duelData[cardsKey][fullCardKey]) {
@@ -40,6 +34,16 @@ const CardImage: React.FC<CardImageProps> = ({
     } else if (duel && shortCardKey && (shortCardKey === 'extraMonsterOne' || shortCardKey === 'extraMonsterTwo') && duel.duelData[shortCardKey].length > 0) {
         cardImage = duel.duelData[shortCardKey];
     }
+
+    const handleCardClick = () => {
+        if (cardOwner && shortCardKey && createdDuel !== undefined && duel && duel.duelId) {
+            if (cardImage === placeholderImage) {
+                takePhoto(shortCardKey, createdDuel, duel.duelId);
+            } else if (handleCardActionsOpen) {
+                handleCardActionsOpen(cardImage);
+            }
+        }
+    };
 
     return <IonImg style={style} src={cardImage} alt={altText} onClick={handleCardClick} />;
 }
