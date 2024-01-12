@@ -26,13 +26,13 @@ export const updateLifePoints = (updatedDuelData: { [key: string]: any }, duelId
     });
 };
 
-export const updateCardPhoto = async (createdDuel: boolean, cardSlot: string, cardImage: Photo, duelId: string) => {
+export const updateCardPhoto = async (createdDuel: boolean, cardSlot: string, cardImage: Photo, duelId: string, cardData: { [key: string]: any }) => {
     await axios.post(cardURL, {
         payload: {
             duelId,
             playerId: localStorage.getItem('oldConnectionId'),
             duelData: {
-                cardUpdate: { createdDuel, cardSlot, cardImage }
+                cardUpdate: { createdDuel, cardSlot, cardImage, cardData }
             }
         }
     }, {

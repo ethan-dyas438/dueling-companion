@@ -449,7 +449,6 @@ const DuelMat: React.FC = () => {
     );
   }
 
-  // TODO: Start on adding card actions. The card data model will need to be updated.
   // TODO: Implement enlarged image viewer. Could be a modal for single images, then for graveyard and banished it
   //      could be a carousel (with the graveyard and banished views enabling actions).
   // TODO: Look into issue, where if a image upload is cancelled then a different slot is selected the image still goes to the originally
