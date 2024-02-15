@@ -30,6 +30,7 @@ import LifePointAlert from '../components/LifePointAlert';
 import CardImage from '../components/CardImage';
 import CardActions from '../components/CardActions';
 import { CARD_ACTIONS } from '../constants/cardActions';
+import { CARD_POSITIONS } from '../constants/cardPositions';
 
 enum PLAYERS {
   A = 'A',
@@ -155,8 +156,23 @@ const DuelMat: React.FC = () => {
   };
 
   const handleCardActionsOpen = (cardData: { [key: string]: any }) => {
-    // TODO: Use the cardData to set the card actions
-    setCurrentCardActions([]);
+    const validActions = [];
+
+    if (!cardData.flipped) {
+      validActions.push(CARD_ACTIONS.ACTIVATE_CARD);
+    } else {
+      validActions.push(CARD_ACTIONS.TRANSFER_TO_OPPONENT);
+      validActions.push(CARD_ACTIONS.BANISH);
+      validActions.push(CARD_ACTIONS.SEND_TO_GRAVEYARD);
+    }
+
+    if (cardData.position === CARD_POSITIONS.ATTACK) {
+      validActions.push(CARD_ACTIONS.DEFENSE_POSITION);
+    } else if (cardData.position === CARD_POSITIONS.DEFENSE) {
+      validActions.push(CARD_ACTIONS.ATTACK_POSITION);
+    }
+
+    setCurrentCardActions(validActions);
     setIsCardActionsOpen(true);
   };
 
@@ -290,8 +306,8 @@ const DuelMat: React.FC = () => {
   }
 
   const renderYourCards = () => {
-    const oponentPlayer = createdDuel ? 'playerA' : 'playerB';
-    const cardsKey = `${oponentPlayer}Cards`;
+    const currentPlayer = createdDuel ? 'playerA' : 'playerB';
+    const cardsKey = `${currentPlayer}Cards`;
 
     return (
       <>
@@ -301,7 +317,7 @@ const DuelMat: React.FC = () => {
               placeholderImage="resources\placeholderFieldZone.png"
               altText="Field Spell Slot"
               cardsKey={cardsKey}
-              fullCardKey={`${oponentPlayer}FieldSpell`}
+              fullCardKey={`${currentPlayer}FieldSpell`}
               duel={duel}
               shortCardKey="FieldSpell"
               createdDuel={createdDuel}
@@ -314,7 +330,7 @@ const DuelMat: React.FC = () => {
               placeholderImage="resources\placeholderMonster.png"
               altText="Monster Card Slot"
               cardsKey={cardsKey}
-              fullCardKey={`${oponentPlayer}MonsterOne`}
+              fullCardKey={`${currentPlayer}MonsterOne`}
               duel={duel}
               shortCardKey="MonsterOne"
               createdDuel={createdDuel}
@@ -327,7 +343,7 @@ const DuelMat: React.FC = () => {
               placeholderImage="resources\placeholderMonster.png"
               altText="Monster Card Slot"
               cardsKey={cardsKey}
-              fullCardKey={`${oponentPlayer}MonsterTwo`}
+              fullCardKey={`${currentPlayer}MonsterTwo`}
               duel={duel}
               shortCardKey="MonsterTwo"
               createdDuel={createdDuel}
@@ -340,7 +356,7 @@ const DuelMat: React.FC = () => {
               placeholderImage="resources\placeholderMonster.png"
               altText="Monster Card Slot"
               cardsKey={cardsKey}
-              fullCardKey={`${oponentPlayer}MonsterThree`}
+              fullCardKey={`${currentPlayer}MonsterThree`}
               duel={duel}
               shortCardKey="MonsterThree"
               createdDuel={createdDuel}
@@ -353,7 +369,7 @@ const DuelMat: React.FC = () => {
               placeholderImage="resources\placeholderMonster.png"
               altText="Monster Card Slot"
               cardsKey={cardsKey}
-              fullCardKey={`${oponentPlayer}MonsterFour`}
+              fullCardKey={`${currentPlayer}MonsterFour`}
               duel={duel}
               shortCardKey="MonsterFour"
               createdDuel={createdDuel}
@@ -366,7 +382,7 @@ const DuelMat: React.FC = () => {
               placeholderImage="resources\placeholderMonster.png"
               altText="Monster Card Slot"
               cardsKey={cardsKey}
-              fullCardKey={`${oponentPlayer}MonsterFive`}
+              fullCardKey={`${currentPlayer}MonsterFive`}
               duel={duel}
               shortCardKey="MonsterFive"
               createdDuel={createdDuel}
@@ -383,7 +399,7 @@ const DuelMat: React.FC = () => {
               placeholderImage="resources\placeholderSpellTrap.png"
               altText="Spell/Trap Card Slot"
               cardsKey={cardsKey}
-              fullCardKey={`${oponentPlayer}SpellTrapOne`}
+              fullCardKey={`${currentPlayer}SpellTrapOne`}
               duel={duel}
               shortCardKey="SpellTrapOne"
               createdDuel={createdDuel}
@@ -396,7 +412,7 @@ const DuelMat: React.FC = () => {
               placeholderImage="resources\placeholderSpellTrap.png"
               altText="Spell/Trap Card Slot"
               cardsKey={cardsKey}
-              fullCardKey={`${oponentPlayer}SpellTrapTwo`}
+              fullCardKey={`${currentPlayer}SpellTrapTwo`}
               duel={duel}
               shortCardKey="SpellTrapTwo"
               createdDuel={createdDuel}
@@ -409,7 +425,7 @@ const DuelMat: React.FC = () => {
               placeholderImage="resources\placeholderSpellTrap.png"
               altText="Spell/Trap Card Slot"
               cardsKey={cardsKey}
-              fullCardKey={`${oponentPlayer}SpellTrapThree`}
+              fullCardKey={`${currentPlayer}SpellTrapThree`}
               duel={duel}
               shortCardKey="SpellTrapThree"
               createdDuel={createdDuel}
@@ -422,7 +438,7 @@ const DuelMat: React.FC = () => {
               placeholderImage="resources\placeholderSpellTrap.png"
               altText="Spell/Trap Card Slot"
               cardsKey={cardsKey}
-              fullCardKey={`${oponentPlayer}SpellTrapFour`}
+              fullCardKey={`${currentPlayer}SpellTrapFour`}
               duel={duel}
               shortCardKey="SpellTrapFour"
               createdDuel={createdDuel}
@@ -435,7 +451,7 @@ const DuelMat: React.FC = () => {
               placeholderImage="resources\placeholderSpellTrap.png"
               altText="Spell/Trap Card Slot"
               cardsKey={cardsKey}
-              fullCardKey={`${oponentPlayer}SpellTrapFive`}
+              fullCardKey={`${currentPlayer}SpellTrapFive`}
               duel={duel}
               shortCardKey="SpellTrapFive"
               createdDuel={createdDuel}
@@ -449,8 +465,9 @@ const DuelMat: React.FC = () => {
     );
   }
 
-  // TODO: Implement enlarged image viewer. Could be a modal for single images, then for graveyard and banished it
-  //      could be a carousel (with the graveyard and banished views enabling actions).
+  // TODO: Implement enlarged image viewer. Could be a modal for single images, then for graveyard it
+  //      could be a carousel (with the graveyard view enabling actions).
+  // TODO: Implement banished card counter.
   // TODO: Look into issue, where if a image upload is cancelled then a different slot is selected the image still goes to the originally
   //      selected slot.
 

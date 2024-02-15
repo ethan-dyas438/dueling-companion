@@ -52,9 +52,13 @@ const CardImage: React.FC<CardImageProps> = ({
     let cardImage = placeholderImage;
 
     if (duel && cardsKey && fullCardKey && duel.duelData[cardsKey][fullCardKey]) {
-        cardImage = duel.duelData[cardsKey][fullCardKey];
-    } else if (duel && shortCardKey && (shortCardKey === 'extraMonsterOne' || shortCardKey === 'extraMonsterTwo') && duel.duelData[shortCardKey].length > 0) {
-        cardImage = duel.duelData[shortCardKey];
+        if (!duel.duelData[cardsKey][fullCardKey].flipped) {
+            cardImage = "resources\\yugiohCard.png";
+        } else {
+            cardImage = duel.duelData[cardsKey][fullCardKey].cardImage;
+        }
+    } else if (duel && shortCardKey && (shortCardKey === 'extraMonsterOne' || shortCardKey === 'extraMonsterTwo') && duel.duelData[shortCardKey]) {
+        cardImage = duel.duelData[shortCardKey].cardImage;
     }
 
     const handleUploadCard = async () => {
@@ -63,12 +67,12 @@ const CardImage: React.FC<CardImageProps> = ({
                 chosenPosition: tempCardPosition,
                 cardFlipped: tempCardFlipped
             }
-            console.log(cardData);
+
             await updateCardPhoto(!!createdDuel, shortCardKey, tempCardPhoto, duel.duelId, cardData);
             setTempCardPhoto(undefined);
             setTempCardPosition(undefined);
             setTempCardFlipped(undefined);
-        } // TODO: Test the new upload and update image assignment to get the image fromt he card data (set cardData then grab image)
+        }
     }
 
     const handleCardClick = async () => {
@@ -76,15 +80,44 @@ const CardImage: React.FC<CardImageProps> = ({
             if (cardImage === placeholderImage) {
                 const newCard = await takePhoto();
                 setTempCardPhoto(newCard);
-            } else if (handleCardActionsOpen) {
-                handleCardActionsOpen(cardImage);
+            } else if (handleCardActionsOpen && cardsKey && fullCardKey) {
+                handleCardActionsOpen(duel.duelData[cardsKey][fullCardKey]);
+            } else if (
+                handleCardActionsOpen &&
+                shortCardKey &&
+                (shortCardKey === 'extraMonsterOne' || shortCardKey === 'extraMonsterTwo') &&
+                ((createdDuel && duel.duelData[shortCardKey].player === 'a') || (!createdDuel && duel.duelData[shortCardKey].player === 'b'))
+            ) {
+                handleCardActionsOpen(duel.duelData[shortCardKey]);
             }
         }
     };
 
+    const getRotation = () => {
+        if (duel && cardsKey && fullCardKey && duel.duelData[cardsKey][fullCardKey]) {
+            if (duel.duelData[cardsKey][fullCardKey].position === CARD_POSITIONS.DEFENSE) {
+                return '90deg'
+            }
+        } else if (duel && shortCardKey && (shortCardKey === 'extraMonsterOne' || shortCardKey === 'extraMonsterTwo')) {
+            if (duel.duelData[shortCardKey].position === CARD_POSITIONS.DEFENSE) {
+                return '90deg'
+            }
+        }
+        return '0deg'
+    }
+
+    const getOpacity = () => {
+        if (duel && cardsKey && fullCardKey && duel.duelData[cardsKey][fullCardKey]) {
+            return '1.0'
+        } else if (duel && shortCardKey && (shortCardKey === 'extraMonsterOne' || shortCardKey === 'extraMonsterTwo') && duel.duelData[shortCardKey]) {
+            return '1.0'
+        }
+        return '0.6'
+    }
+
     return (
         <>
-            <IonImg style={style} src={cardImage} alt={altText} onClick={handleCardClick} />
+            <IonImg style={ { ...style, padding: "0 14px", rotate: getRotation(), opacity: getOpacity() }} src={cardImage} alt={altText} onClick={handleCardClick} />
 
             <IonAlert
                 isOpen={positionAlertOpen}
@@ -92,15 +125,15 @@ const CardImage: React.FC<CardImageProps> = ({
                 message="Will you choose to set this card in attack or defense position?"
                 inputs={[
                     {
-                      label: 'Attack',
-                      type: 'radio',
-                      value: CARD_POSITIONS.ATTACK,
-                      checked: true
+                        label: 'Attack',
+                        type: 'radio',
+                        value: CARD_POSITIONS.ATTACK,
+                        checked: true
                     },
                     {
-                      label: 'Defense',
-                      type: 'radio',
-                      value: CARD_POSITIONS.DEFENSE,
+                        label: 'Defense',
+                        type: 'radio',
+                        value: CARD_POSITIONS.DEFENSE,
                     }
                 ]}
                 buttons={['Submit']}
@@ -117,15 +150,15 @@ const CardImage: React.FC<CardImageProps> = ({
                 message="Will you choose to set this card face up or face down?"
                 inputs={[
                     {
-                      label: 'Face Up',
-                      type: 'radio',
-                      value: true,
-                      checked: true
+                        label: 'Face Up',
+                        type: 'radio',
+                        value: true,
+                        checked: true
                     },
                     {
-                      label: 'Face Down',
-                      type: 'radio',
-                      value: false,
+                        label: 'Face Down',
+                        type: 'radio',
+                        value: false,
                     }
                 ]}
                 buttons={['Submit']}

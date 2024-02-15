@@ -15,19 +15,26 @@ const CardActions: React.FC<CardImageProps> = ({
     cardActions
 }) => {
     const handleActionsDismissed = (result: OverlayEventDetail) => {
+        // TODO: Implement card actions and their effects on the card image
         switch (result.data.action) {
             case CARD_ACTIONS.ACTIVATE_CARD:
                 console.log('Implement flip card');
+                break;
             case CARD_ACTIONS.ATTACK_POSITION:
                 console.log('Implement attack position update');
+                break;
             case CARD_ACTIONS.DEFENSE_POSITION:
                 console.log('Implement defense position update');
+                break;
             case CARD_ACTIONS.BANISH:
                 console.log('Implement banish action');
+                break;
             case CARD_ACTIONS.SEND_TO_GRAVEYARD:
                 console.log('Implement graveyard action');
+                break;
             case CARD_ACTIONS.TRANSFER_TO_OPPONENT:
                 console.log('Implement transfer action');
+                break;
         }
 
         setIsOpen(false);
@@ -58,7 +65,7 @@ const CardActions: React.FC<CardImageProps> = ({
     return (
         <IonActionSheet
             isOpen={isOpen}
-            header="Actions"
+            header="Card Actions"
             buttons={actionButtons}
             onDidDismiss={({ detail }) => handleActionsDismissed(detail)}
         />

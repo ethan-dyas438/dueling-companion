@@ -12,6 +12,6 @@ export enum CARD_ACTION_TITLES {
     attackPosition = 'Change to Attack',
     activateCard = 'Flip Card',
     banish = 'Banish',
-    graveyard = 'Graveyard',
+    graveyard = 'Send to Graveyard',
     transferToOpponent = 'Transfer To Opponent'
 }
