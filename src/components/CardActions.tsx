@@ -2,29 +2,54 @@ import { IonActionSheet } from '@ionic/react';
 import { OverlayEventDetail } from '@ionic/core';
 import { useEffect } from 'react';
 import { CARD_ACTIONS, CARD_ACTION_TITLES } from '../constants/cardActions';
+import { DUEL_ACTION } from '../constants/duelActions';
+import { CARD_POSITIONS } from '../constants/cardPositions';
 
 interface CardImageProps {
     isOpen: boolean;
     setIsOpen: Function;
     cardActions: CARD_ACTIONS[];
+    cardKey: string;
+    duel: { [key: string]: any };
+    createdDuel: boolean;
+    websocketAction: Function;
 }
 
 const CardActions: React.FC<CardImageProps> = ({
     isOpen,
     setIsOpen,
-    cardActions
+    cardActions,
+    cardKey,
+    duel,
+    createdDuel,
+    websocketAction
 }) => {
+    const updateCardState = (cardProperty: string, cardValue: string | boolean) => {
+        if (cardKey.includes('player')) {
+            const playerToUpdate = createdDuel ? 'playerACards' : 'playerBCards';
+            websocketAction({
+                action: DUEL_ACTION.UPDATE,
+                payload: { duelId: duel.duelId, duelData: { [playerToUpdate]: { [cardKey]: { ...duel.duelData[playerToUpdate][cardKey], [cardProperty]: cardValue } } } }
+            });
+        } else if (cardKey === 'extraMonsterOne' || cardKey === 'extraMonsterTwo') {
+            websocketAction({
+                action: DUEL_ACTION.UPDATE,
+                payload: { duelId: duel.duelId, duelData: { [cardKey]: { ...duel.duelData[cardKey], [cardProperty]: cardValue } } }
+            });
+        }
+    }
+
     const handleActionsDismissed = (result: OverlayEventDetail) => {
         // TODO: Implement card actions and their effects on the card image
         switch (result.data.action) {
             case CARD_ACTIONS.ACTIVATE_CARD:
-                console.log('Implement flip card');
+                updateCardState('flipped', true);
                 break;
             case CARD_ACTIONS.ATTACK_POSITION:
-                console.log('Implement attack position update');
+                updateCardState('position', CARD_POSITIONS.ATTACK);
                 break;
             case CARD_ACTIONS.DEFENSE_POSITION:
-                console.log('Implement defense position update');
+                updateCardState('position', CARD_POSITIONS.DEFENSE);
                 break;
             case CARD_ACTIONS.BANISH:
                 console.log('Implement banish action');

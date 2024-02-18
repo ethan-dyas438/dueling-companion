@@ -47,11 +47,12 @@ const DuelMat: React.FC = () => {
   const [activeWebSocket, setActiveWebSocket] = useState<boolean>(true);
   const [createdDuel, setCreatedDuel] = useState<boolean>(localStorage.getItem('createdDuel') === 'true' || false);
   const [duel, setDuel] = useState<{ [key: string]: any }>(JSON.parse(localStorage.getItem('duel') || 'null'));
-  const [turnActive, setTurnActive] = useState<boolean>(false);
+  // const [turnActive, setTurnActive] = useState<boolean>(false);
   const [diceResult, setDiceResult] = useState<number>(0);
   const [isLPAlertOpen, setIsLPAlertOpen] = useState<boolean>(false);
   const [isCardActionsOpen, setIsCardActionsOpen] = useState<boolean>(false);
   const [currentCardActions, setCurrentCardActions] = useState<CARD_ACTIONS[]>([]);
+  const [currentCardKey, setCurrentCardKey] = useState<string>();
   const [isDiceToastOpen, setIsDiceToastOpen] = useState<boolean>(false);
   const [isCopyToastOpen, setIsCopyToastOpen] = useState<boolean>(false);
   const { sendJsonMessage, readyState } = useWebSocket(duelWebsocket, {
@@ -122,28 +123,25 @@ const DuelMat: React.FC = () => {
       const playerAReady = getPlayerAttribute(true, 'playerReady', duel.duelData);
       const playerBReady = getPlayerAttribute(false, 'playerReady', duel.duelData);
       if (createdDuel && duel.duelData.currentPlayer === "" && playerAReady && playerBReady) {
-        const updatedDuelData = { ...duel.duelData };
-        updatedDuelData.currentPlayer = PLAYERS.A;
-
         sendJsonMessage({
           action: DUEL_ACTION.UPDATE,
-          payload: { duelId, duelData: updatedDuelData }
+          payload: { duelId, duelData: { currentPlayer: PLAYERS.A } }
         });
       }
 
-      if (createdDuel) {
-        if (duel.duelData.currentPlayer === PLAYERS.A) {
-          setTurnActive(true);
-        } else if (duel.duelData.currentPlayer === PLAYERS.B) {
-          setTurnActive(false);
-        }
-      } else {
-        if (duel.duelData.currentPlayer === PLAYERS.A) {
-          setTurnActive(false);
-        } else if (duel.duelData.currentPlayer === PLAYERS.B) {
-          setTurnActive(true);
-        }
-      }
+      // if (createdDuel) {
+      //   if (duel.duelData.currentPlayer === PLAYERS.A) {
+      //     setTurnActive(true);
+      //   } else if (duel.duelData.currentPlayer === PLAYERS.B) {
+      //     setTurnActive(false);
+      //   }
+      // } else {
+      //   if (duel.duelData.currentPlayer === PLAYERS.A) {
+      //     setTurnActive(false);
+      //   } else if (duel.duelData.currentPlayer === PLAYERS.B) {
+      //     setTurnActive(true);
+      //   }
+      // }
     }
   }, [duel]);
 
@@ -155,7 +153,7 @@ const DuelMat: React.FC = () => {
     }
   };
 
-  const handleCardActionsOpen = (cardData: { [key: string]: any }) => {
+  const handleCardActionsOpen = (cardData: { [key: string]: any }, cardKey: string) => {
     const validActions = [];
 
     if (!cardData.flipped) {
@@ -164,15 +162,16 @@ const DuelMat: React.FC = () => {
       validActions.push(CARD_ACTIONS.TRANSFER_TO_OPPONENT);
       validActions.push(CARD_ACTIONS.BANISH);
       validActions.push(CARD_ACTIONS.SEND_TO_GRAVEYARD);
-    }
 
-    if (cardData.position === CARD_POSITIONS.ATTACK) {
-      validActions.push(CARD_ACTIONS.DEFENSE_POSITION);
-    } else if (cardData.position === CARD_POSITIONS.DEFENSE) {
-      validActions.push(CARD_ACTIONS.ATTACK_POSITION);
+      if (cardData.position === CARD_POSITIONS.ATTACK) {
+        validActions.push(CARD_ACTIONS.DEFENSE_POSITION);
+      } else if (cardData.position === CARD_POSITIONS.DEFENSE) {
+        validActions.push(CARD_ACTIONS.ATTACK_POSITION);
+      }
     }
 
     setCurrentCardActions(validActions);
+    setCurrentCardKey(cardKey);
     setIsCardActionsOpen(true);
   };
 
@@ -475,7 +474,15 @@ const DuelMat: React.FC = () => {
     <IonPage id="duel-mat-page" style={{ overflowY: "scroll" }}>
       <IonLoading isOpen={loadingDuel} message="Loading Duel..." />
       <LifePointAlert isOpen={isLPAlertOpen} setIsOpen={setIsLPAlertOpen} duel={duel} createdDuel={createdDuel} websocketAction={sendJsonMessage} />
-      <CardActions isOpen={isCardActionsOpen} setIsOpen={setIsCardActionsOpen} cardActions={currentCardActions} />
+      <CardActions
+        isOpen={isCardActionsOpen}
+        setIsOpen={setIsCardActionsOpen}
+        cardActions={currentCardActions}
+        cardKey={currentCardKey || ""}
+        duel={duel}
+        createdDuel={createdDuel}
+        websocketAction={sendJsonMessage}
+      />
 
       <IonContent>
         {duel?.duelData?.currentPlayer === "" ?

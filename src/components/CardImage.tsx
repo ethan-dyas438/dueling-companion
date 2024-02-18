@@ -58,7 +58,11 @@ const CardImage: React.FC<CardImageProps> = ({
             cardImage = duel.duelData[cardsKey][fullCardKey].cardImage;
         }
     } else if (duel && shortCardKey && (shortCardKey === 'extraMonsterOne' || shortCardKey === 'extraMonsterTwo') && duel.duelData[shortCardKey]) {
-        cardImage = duel.duelData[shortCardKey].cardImage;
+        if (!duel.duelData[shortCardKey].flipped) {
+            cardImage = "resources\\yugiohCard.png";
+        } else {
+            cardImage = duel.duelData[shortCardKey].cardImage;
+        }
     }
 
     const handleUploadCard = async () => {
@@ -76,19 +80,19 @@ const CardImage: React.FC<CardImageProps> = ({
     }
 
     const handleCardClick = async () => {
-        if (cardOwner && shortCardKey && createdDuel !== undefined && duel && duel.duelId) {
+        if (cardOwner && duel && duel.duelId) {
             if (cardImage === placeholderImage) {
                 const newCard = await takePhoto();
                 setTempCardPhoto(newCard);
             } else if (handleCardActionsOpen && cardsKey && fullCardKey) {
-                handleCardActionsOpen(duel.duelData[cardsKey][fullCardKey]);
+                handleCardActionsOpen(duel.duelData[cardsKey][fullCardKey], fullCardKey);
             } else if (
                 handleCardActionsOpen &&
                 shortCardKey &&
                 (shortCardKey === 'extraMonsterOne' || shortCardKey === 'extraMonsterTwo') &&
                 ((createdDuel && duel.duelData[shortCardKey].player === 'a') || (!createdDuel && duel.duelData[shortCardKey].player === 'b'))
             ) {
-                handleCardActionsOpen(duel.duelData[shortCardKey]);
+                handleCardActionsOpen(duel.duelData[shortCardKey], shortCardKey);
             }
         }
     };
@@ -117,7 +121,7 @@ const CardImage: React.FC<CardImageProps> = ({
 
     return (
         <>
-            <IonImg style={ { ...style, padding: "0 14px", rotate: getRotation(), opacity: getOpacity() }} src={cardImage} alt={altText} onClick={handleCardClick} />
+            <IonImg style={ { ...style, padding: "0 15px", rotate: getRotation(), opacity: getOpacity() }} src={cardImage} alt={altText} onClick={handleCardClick} />
 
             <IonAlert
                 isOpen={positionAlertOpen}
