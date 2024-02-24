@@ -4,7 +4,8 @@ export enum CARD_ACTIONS {
     ACTIVATE_CARD = 'activateCard',
     BANISH = 'banish',
     SEND_TO_GRAVEYARD = 'graveyard',
-    TRANSFER_TO_OPPONENT = 'transferToOpponent'
+    TRANSFER_TO_OPPONENT = 'transferToOpponent',
+    VIEW_CARD = 'viewCard'
 }
 
 export enum CARD_ACTION_TITLES {
@@ -13,5 +14,6 @@ export enum CARD_ACTION_TITLES {
     activateCard = 'Flip Card',
     banish = 'Banish',
     graveyard = 'Send to Graveyard',
-    transferToOpponent = 'Transfer To Opponent'
+    transferToOpponent = 'Transfer To Opponent',
+    viewCard = 'View Card'
 }

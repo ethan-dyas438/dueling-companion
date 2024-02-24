@@ -1,4 +1,4 @@
-import { IonAlert, IonImg } from '@ionic/react';
+import { IonAlert, IonImg, IonLoading } from '@ionic/react';
 import { useCardPhotos } from '../hooks/useCardPhotos';
 import { updateCardPhoto } from '../utils/updateDuelActions';
 import { useEffect, useState } from 'react';
@@ -36,6 +36,7 @@ const CardImage: React.FC<CardImageProps> = ({
     const [flippedAlertOpen, setFlippedAlertOpen] = useState<boolean>(false);
     const [tempCardPosition, setTempCardPosition] = useState<CARD_POSITIONS>();
     const [tempCardFlipped, setTempCardFlipped] = useState<boolean>();
+    const [uploadingCard, setUploadingCard] = useState<boolean>(false);
 
     useEffect(() => {
         if (tempCardPhoto) {
@@ -72,7 +73,9 @@ const CardImage: React.FC<CardImageProps> = ({
                 cardFlipped: tempCardFlipped
             }
 
+            setUploadingCard(true);
             await updateCardPhoto(!!createdDuel, shortCardKey, tempCardPhoto, duel.duelId, cardData);
+            setUploadingCard(false);
             setTempCardPhoto(undefined);
             setTempCardPosition(undefined);
             setTempCardFlipped(undefined);
@@ -80,19 +83,19 @@ const CardImage: React.FC<CardImageProps> = ({
     }
 
     const handleCardClick = async () => {
-        if (cardOwner && duel && duel.duelId) {
-            if (cardImage === placeholderImage) {
+        if (duel && duel.duelId) {
+            if (cardOwner && cardImage === placeholderImage) {
                 const newCard = await takePhoto();
                 setTempCardPhoto(newCard);
             } else if (handleCardActionsOpen && cardsKey && fullCardKey) {
-                handleCardActionsOpen(duel.duelData[cardsKey][fullCardKey], fullCardKey);
+                handleCardActionsOpen(duel.duelData[cardsKey][fullCardKey], fullCardKey, !!cardOwner);
             } else if (
                 handleCardActionsOpen &&
                 shortCardKey &&
                 (shortCardKey === 'extraMonsterOne' || shortCardKey === 'extraMonsterTwo') &&
                 ((createdDuel && duel.duelData[shortCardKey].player === 'a') || (!createdDuel && duel.duelData[shortCardKey].player === 'b'))
             ) {
-                handleCardActionsOpen(duel.duelData[shortCardKey], shortCardKey);
+                handleCardActionsOpen(duel.duelData[shortCardKey], shortCardKey, !!cardOwner);
             }
         }
     };
@@ -121,6 +124,7 @@ const CardImage: React.FC<CardImageProps> = ({
 
     return (
         <>
+            <IonLoading isOpen={uploadingCard} message="Uploading Card..." />
             <IonImg style={ { ...style, padding: "0 15px", rotate: getRotation(), opacity: getOpacity() }} src={cardImage} alt={altText} onClick={handleCardClick} />
 
             <IonAlert

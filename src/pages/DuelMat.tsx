@@ -23,7 +23,7 @@ import './Home.css';
 import useWebSocket, { ReadyState } from 'react-use-websocket';
 import { duelWebsocket } from '../constants/urls';
 import { DUEL_ACTION } from '../constants/duelActions';
-import { getPlayerAttribute } from '../utils/getPlayerDuelData';
+import { getPlayerAttribute, getPlayerCardImage } from '../utils/getPlayerDuelData';
 import { updateReadyStatus } from '../utils/updateDuelActions';
 import { Clipboard } from '@capacitor/clipboard';
 import LifePointAlert from '../components/LifePointAlert';
@@ -31,6 +31,7 @@ import CardImage from '../components/CardImage';
 import CardActions from '../components/CardActions';
 import { CARD_ACTIONS } from '../constants/cardActions';
 import { CARD_POSITIONS } from '../constants/cardPositions';
+import CardViewer from '../components/CardViewer';
 
 enum PLAYERS {
   A = 'A',
@@ -50,6 +51,8 @@ const DuelMat: React.FC = () => {
   // const [turnActive, setTurnActive] = useState<boolean>(false);
   const [diceResult, setDiceResult] = useState<number>(0);
   const [isLPAlertOpen, setIsLPAlertOpen] = useState<boolean>(false);
+  const [isCardViewerOpen, setIsCardViewerOpen] = useState<boolean>(false);
+  const [isCardOwner, setIsCardOwner] = useState<boolean>(false);
   const [isCardActionsOpen, setIsCardActionsOpen] = useState<boolean>(false);
   const [currentCardActions, setCurrentCardActions] = useState<CARD_ACTIONS[]>([]);
   const [currentCardKey, setCurrentCardKey] = useState<string>();
@@ -153,25 +156,31 @@ const DuelMat: React.FC = () => {
     }
   };
 
-  const handleCardActionsOpen = (cardData: { [key: string]: any }, cardKey: string) => {
+  const handleCardActionsOpen = (cardData: { [key: string]: any }, cardKey: string, ownsCard: boolean) => {
     const validActions = [];
 
-    if (!cardData.flipped) {
-      validActions.push(CARD_ACTIONS.ACTIVATE_CARD);
-    } else {
-      validActions.push(CARD_ACTIONS.TRANSFER_TO_OPPONENT);
-      validActions.push(CARD_ACTIONS.BANISH);
-      validActions.push(CARD_ACTIONS.SEND_TO_GRAVEYARD);
-
-      if (cardData.position === CARD_POSITIONS.ATTACK) {
-        validActions.push(CARD_ACTIONS.DEFENSE_POSITION);
-      } else if (cardData.position === CARD_POSITIONS.DEFENSE) {
-        validActions.push(CARD_ACTIONS.ATTACK_POSITION);
+    if (ownsCard) {
+      if (!cardData.flipped) {
+        validActions.push(CARD_ACTIONS.ACTIVATE_CARD);
+      } else {
+        validActions.push(CARD_ACTIONS.TRANSFER_TO_OPPONENT);
+        validActions.push(CARD_ACTIONS.BANISH);
+        validActions.push(CARD_ACTIONS.SEND_TO_GRAVEYARD);
+  
+        if (cardData.position === CARD_POSITIONS.ATTACK) {
+          validActions.push(CARD_ACTIONS.DEFENSE_POSITION);
+        } else if (cardData.position === CARD_POSITIONS.DEFENSE) {
+          validActions.push(CARD_ACTIONS.ATTACK_POSITION);
+        }
       }
+      validActions.push(CARD_ACTIONS.VIEW_CARD);
+    } else if (!ownsCard && cardData.flipped) {
+      validActions.push(CARD_ACTIONS.VIEW_CARD);
     }
 
     setCurrentCardActions(validActions);
     setCurrentCardKey(cardKey);
+    setIsCardOwner(ownsCard);
     setIsCardActionsOpen(true);
   };
 
@@ -202,6 +211,8 @@ const DuelMat: React.FC = () => {
               cardsKey={cardsKey}
               fullCardKey={`${oponentPlayer}SpellTrapFive`}
               duel={duel}
+              shortCardKey="SpellTrapFive"
+              handleCardActionsOpen={handleCardActionsOpen}
             />
           </IonCol>
           <IonCol>
@@ -211,6 +222,8 @@ const DuelMat: React.FC = () => {
               cardsKey={cardsKey}
               fullCardKey={`${oponentPlayer}SpellTrapFour`}
               duel={duel}
+              shortCardKey="SpellTrapFour"
+              handleCardActionsOpen={handleCardActionsOpen}
             />
           </IonCol>
           <IonCol>
@@ -220,6 +233,8 @@ const DuelMat: React.FC = () => {
               cardsKey={cardsKey}
               fullCardKey={`${oponentPlayer}SpellTrapThree`}
               duel={duel}
+              shortCardKey="SpellTrapThree"
+              handleCardActionsOpen={handleCardActionsOpen}
             />
           </IonCol>
           <IonCol>
@@ -229,6 +244,8 @@ const DuelMat: React.FC = () => {
               cardsKey={cardsKey}
               fullCardKey={`${oponentPlayer}SpellTrapTwo`}
               duel={duel}
+              shortCardKey="SpellTrapTwo"
+              handleCardActionsOpen={handleCardActionsOpen}
             />
           </IonCol>
           <IonCol>
@@ -238,6 +255,8 @@ const DuelMat: React.FC = () => {
               cardsKey={cardsKey}
               fullCardKey={`${oponentPlayer}SpellTrapOne`}
               duel={duel}
+              shortCardKey="SpellTrapOne"
+              handleCardActionsOpen={handleCardActionsOpen}
             />
           </IonCol>
           <IonCol>
@@ -252,6 +271,8 @@ const DuelMat: React.FC = () => {
               cardsKey={cardsKey}
               fullCardKey={`${oponentPlayer}MonsterFive`}
               duel={duel}
+              shortCardKey="MonsterFive"
+              handleCardActionsOpen={handleCardActionsOpen}
             />
           </IonCol>
           <IonCol>
@@ -261,6 +282,8 @@ const DuelMat: React.FC = () => {
               cardsKey={cardsKey}
               fullCardKey={`${oponentPlayer}MonsterFour`}
               duel={duel}
+              shortCardKey="MonsterFour"
+              handleCardActionsOpen={handleCardActionsOpen}
             />
           </IonCol>
           <IonCol>
@@ -270,6 +293,8 @@ const DuelMat: React.FC = () => {
               cardsKey={cardsKey}
               fullCardKey={`${oponentPlayer}MonsterThree`}
               duel={duel}
+              shortCardKey="MonsterThree"
+              handleCardActionsOpen={handleCardActionsOpen}
             />
           </IonCol>
           <IonCol>
@@ -279,6 +304,8 @@ const DuelMat: React.FC = () => {
               cardsKey={cardsKey}
               fullCardKey={`${oponentPlayer}MonsterTwo`}
               duel={duel}
+              shortCardKey="MonsterTwo"
+              handleCardActionsOpen={handleCardActionsOpen}
             />
           </IonCol>
           <IonCol>
@@ -288,6 +315,8 @@ const DuelMat: React.FC = () => {
               cardsKey={cardsKey}
               fullCardKey={`${oponentPlayer}MonsterOne`}
               duel={duel}
+              shortCardKey="MonsterOne"
+              handleCardActionsOpen={handleCardActionsOpen}
             />
           </IonCol>
           <IonCol>
@@ -297,6 +326,8 @@ const DuelMat: React.FC = () => {
               cardsKey={cardsKey}
               fullCardKey={`${oponentPlayer}FieldSpell`}
               duel={duel}
+              shortCardKey="FieldSpell"
+              handleCardActionsOpen={handleCardActionsOpen}
             />
           </IonCol>
         </IonRow>
@@ -464,9 +495,8 @@ const DuelMat: React.FC = () => {
     );
   }
 
-  // TODO: Implement enlarged image viewer. Could be a modal for single images, then for graveyard it
-  //      could be a carousel (with the graveyard view enabling actions).
   // TODO: Implement banished card counter.
+  // TODO: Implement enlarged image viewer for graveyard it could be a carousel (with actions enabled to banish or play cards again).
   // TODO: Look into issue, where if a image upload is cancelled then a different slot is selected the image still goes to the originally
   //      selected slot.
 
@@ -474,6 +504,7 @@ const DuelMat: React.FC = () => {
     <IonPage id="duel-mat-page" style={{ overflowY: "scroll" }}>
       <IonLoading isOpen={loadingDuel} message="Loading Duel..." />
       <LifePointAlert isOpen={isLPAlertOpen} setIsOpen={setIsLPAlertOpen} duel={duel} createdDuel={createdDuel} websocketAction={sendJsonMessage} />
+      {duel?.duelData && <CardViewer isOpen={isCardViewerOpen} setIsOpen={setIsCardViewerOpen} cardImage={getPlayerCardImage(createdDuel, isCardOwner, duel.duelData, currentCardKey || "")} />}
       <CardActions
         isOpen={isCardActionsOpen}
         setIsOpen={setIsCardActionsOpen}
@@ -482,6 +513,7 @@ const DuelMat: React.FC = () => {
         duel={duel}
         createdDuel={createdDuel}
         websocketAction={sendJsonMessage}
+        setCardViewerIsOpen={setIsCardViewerOpen}
       />
 
       <IonContent>

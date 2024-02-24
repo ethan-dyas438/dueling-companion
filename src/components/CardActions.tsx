@@ -13,6 +13,7 @@ interface CardImageProps {
     duel: { [key: string]: any };
     createdDuel: boolean;
     websocketAction: Function;
+    setCardViewerIsOpen: Function;
 }
 
 const CardActions: React.FC<CardImageProps> = ({
@@ -22,7 +23,8 @@ const CardActions: React.FC<CardImageProps> = ({
     cardKey,
     duel,
     createdDuel,
-    websocketAction
+    websocketAction,
+    setCardViewerIsOpen
 }) => {
     const updateCardState = (cardProperty: string, cardValue: string | boolean) => {
         if (cardKey.includes('player')) {
@@ -42,6 +44,9 @@ const CardActions: React.FC<CardImageProps> = ({
     const handleActionsDismissed = (result: OverlayEventDetail) => {
         // TODO: Implement card actions and their effects on the card image
         switch (result.data.action) {
+            case CARD_ACTIONS.VIEW_CARD:
+                setCardViewerIsOpen(true);
+                break;
             case CARD_ACTIONS.ACTIVATE_CARD:
                 updateCardState('flipped', true);
                 break;
