@@ -57,7 +57,38 @@ const CardActions: React.FC<CardImageProps> = ({
                 updateCardState('position', CARD_POSITIONS.DEFENSE);
                 break;
             case CARD_ACTIONS.BANISH:
-                console.log('Implement banish action');
+                const playerToUpdate = createdDuel ? 'playerA' : 'playerB';
+                const currentBanishedCards = duel.duelData[`${playerToUpdate}Cards`][`${playerToUpdate}Banished`]
+
+                if (cardKey === 'extraMonsterOne' || cardKey === 'extraMonsterTwo') {
+                    const banishedCard = duel.duelData[cardKey];
+                    websocketAction({
+                        action: DUEL_ACTION.UPDATE,
+                        payload: {
+                            duelId: duel.duelId,
+                            duelData: {
+                                [cardKey]: 'delete',
+                                [`${playerToUpdate}Cards`]: {
+                                    [`${playerToUpdate}Banished`]: currentBanishedCards ? [...currentBanishedCards, banishedCard] : [banishedCard]
+                                }
+                            }
+                        }
+                    });
+                } else {
+                    const banishedCard = duel.duelData[`${playerToUpdate}Cards`][cardKey];
+                    websocketAction({
+                        action: DUEL_ACTION.UPDATE,
+                        payload: {
+                            duelId: duel.duelId,
+                            duelData: {
+                                [`${playerToUpdate}Cards`]: {
+                                    [cardKey]: null,
+                                    [`${playerToUpdate}Banished`]: currentBanishedCards ? [...currentBanishedCards, banishedCard] : [banishedCard]
+                                }
+                            }
+                        }
+                    });
+                }
                 break;
             case CARD_ACTIONS.SEND_TO_GRAVEYARD:
                 console.log('Implement graveyard action');

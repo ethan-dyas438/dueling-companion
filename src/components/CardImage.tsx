@@ -53,7 +53,11 @@ const CardImage: React.FC<CardImageProps> = ({
     let cardImage = placeholderImage;
 
     if (duel && cardsKey && fullCardKey && duel.duelData[cardsKey][fullCardKey]) {
-        if (!duel.duelData[cardsKey][fullCardKey].flipped) {
+        if (fullCardKey.includes('Banished')) {
+            if (duel.duelData[cardsKey][fullCardKey].length > 0) {
+                cardImage = "resources\\banished.png";
+            }
+        } else if (!duel.duelData[cardsKey][fullCardKey].flipped) {
             cardImage = "resources\\yugiohCard.png";
         } else {
             cardImage = duel.duelData[cardsKey][fullCardKey].cardImage;
@@ -84,7 +88,7 @@ const CardImage: React.FC<CardImageProps> = ({
 
     const handleCardClick = async () => {
         if (duel && duel.duelId) {
-            if (cardOwner && cardImage === placeholderImage) {
+            if (cardOwner && cardImage === placeholderImage && !placeholderImage.includes('Banished')) {
                 const newCard = await takePhoto();
                 setTempCardPhoto(newCard);
             } else if (handleCardActionsOpen && cardsKey && fullCardKey) {
@@ -92,10 +96,9 @@ const CardImage: React.FC<CardImageProps> = ({
             } else if (
                 handleCardActionsOpen &&
                 shortCardKey &&
-                (shortCardKey === 'extraMonsterOne' || shortCardKey === 'extraMonsterTwo') &&
-                ((createdDuel && duel.duelData[shortCardKey].player === 'a') || (!createdDuel && duel.duelData[shortCardKey].player === 'b'))
+                (shortCardKey === 'extraMonsterOne' || shortCardKey === 'extraMonsterTwo')
             ) {
-                handleCardActionsOpen(duel.duelData[shortCardKey], shortCardKey, !!cardOwner);
+                handleCardActionsOpen(duel.duelData[shortCardKey], shortCardKey, (createdDuel && duel.duelData[shortCardKey].player === 'a') || (!createdDuel && duel.duelData[shortCardKey].player === 'b'));
             }
         }
     };
@@ -105,7 +108,7 @@ const CardImage: React.FC<CardImageProps> = ({
             if (duel.duelData[cardsKey][fullCardKey].position === CARD_POSITIONS.DEFENSE) {
                 return '90deg'
             }
-        } else if (duel && shortCardKey && (shortCardKey === 'extraMonsterOne' || shortCardKey === 'extraMonsterTwo')) {
+        } else if (duel && shortCardKey && (shortCardKey === 'extraMonsterOne' || shortCardKey === 'extraMonsterTwo') && duel.duelData[shortCardKey]) {
             if (duel.duelData[shortCardKey].position === CARD_POSITIONS.DEFENSE) {
                 return '90deg'
             }

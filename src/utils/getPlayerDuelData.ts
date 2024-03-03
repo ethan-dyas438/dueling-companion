@@ -8,7 +8,7 @@ export const getPlayerAttribute = (createdDuel: boolean, attributeKey: string, d
 
 export const getPlayerCardImage = (createdDuel: boolean, isCardOwner: boolean, duelData: {[key: string]: any}, cardKey: string) => {
     if (cardKey === 'extraMonsterOne' || cardKey === 'extraMonsterTwo') {
-        return duelData[cardKey].cardImage;
+        return duelData[cardKey]?.cardImage;
     }
     
     if (createdDuel) {
@@ -22,6 +22,23 @@ export const getPlayerCardImage = (createdDuel: boolean, isCardOwner: boolean, d
             return duelData.playerBCards[cardKey]?.cardImage;
         } else {
             return duelData.playerACards[cardKey]?.cardImage;
+        }
+    }
+}
+
+export const getPlayerBanishedCards = (createdDuel: boolean, isCardOwner: boolean, duelData: {[key: string]: any}) => {
+    
+    if (createdDuel) {
+        if (isCardOwner) {
+            return duelData.playerACards.playerABanished;
+        } else {
+            return duelData.playerBCards.playerBBanished;
+        }
+    } else {
+        if (isCardOwner) {
+            return duelData.playerBCards.playerBBanished;
+        } else {
+            return duelData.playerACards.playerABanished;
         }
     }
 }

@@ -23,7 +23,7 @@ import './Home.css';
 import useWebSocket, { ReadyState } from 'react-use-websocket';
 import { duelWebsocket } from '../constants/urls';
 import { DUEL_ACTION } from '../constants/duelActions';
-import { getPlayerAttribute, getPlayerCardImage } from '../utils/getPlayerDuelData';
+import { getPlayerAttribute, getPlayerBanishedCards, getPlayerCardImage } from '../utils/getPlayerDuelData';
 import { updateReadyStatus } from '../utils/updateDuelActions';
 import { Clipboard } from '@capacitor/clipboard';
 import LifePointAlert from '../components/LifePointAlert';
@@ -32,6 +32,7 @@ import CardActions from '../components/CardActions';
 import { CARD_ACTIONS } from '../constants/cardActions';
 import { CARD_POSITIONS } from '../constants/cardPositions';
 import CardViewer from '../components/CardViewer';
+import BanishedCardsViewer from '../components/BanishedCardsViewer';
 
 enum PLAYERS {
   A = 'A',
@@ -55,7 +56,8 @@ const DuelMat: React.FC = () => {
   const [isCardOwner, setIsCardOwner] = useState<boolean>(false);
   const [isCardActionsOpen, setIsCardActionsOpen] = useState<boolean>(false);
   const [currentCardActions, setCurrentCardActions] = useState<CARD_ACTIONS[]>([]);
-  const [currentCardKey, setCurrentCardKey] = useState<string>();
+  const [isBanishedViewerOpen, setIsBanishedViewerOpen] = useState<boolean>(false);
+  const [currentCardKey, setCurrentCardKey] = useState<string>("");
   const [isDiceToastOpen, setIsDiceToastOpen] = useState<boolean>(false);
   const [isCopyToastOpen, setIsCopyToastOpen] = useState<boolean>(false);
   const { sendJsonMessage, readyState } = useWebSocket(duelWebsocket, {
@@ -182,6 +184,12 @@ const DuelMat: React.FC = () => {
     setCurrentCardKey(cardKey);
     setIsCardOwner(ownsCard);
     setIsCardActionsOpen(true);
+  };
+
+  const handleBanishedCardViewerOpen = (cardData: { [key: string]: any }, cardKey: string, ownsCard: boolean) => {
+    setCurrentCardKey(cardKey);
+    setIsCardOwner(ownsCard);
+    setIsBanishedViewerOpen(true);
   };
 
   const exitDuel = () => {
@@ -495,16 +503,20 @@ const DuelMat: React.FC = () => {
     );
   }
 
-  // TODO: Implement banished card counter.
   // TODO: Implement enlarged image viewer for graveyard it could be a carousel (with actions enabled to banish or play cards again).
   // TODO: Look into issue, where if a image upload is cancelled then a different slot is selected the image still goes to the originally
-  //      selected slot.
+  //       selected slot. This also applies to other card actions sometimes.
+  // TODO: Stop card actions from calling websocket twice
 
   return (
     <IonPage id="duel-mat-page" style={{ overflowY: "scroll" }}>
       <IonLoading isOpen={loadingDuel} message="Loading Duel..." />
       <LifePointAlert isOpen={isLPAlertOpen} setIsOpen={setIsLPAlertOpen} duel={duel} createdDuel={createdDuel} websocketAction={sendJsonMessage} />
-      {duel?.duelData && <CardViewer isOpen={isCardViewerOpen} setIsOpen={setIsCardViewerOpen} cardImage={getPlayerCardImage(createdDuel, isCardOwner, duel.duelData, currentCardKey || "")} />}
+      {duel?.duelData && <CardViewer isOpen={isCardViewerOpen} setIsOpen={setIsCardViewerOpen} cardImage={getPlayerCardImage(createdDuel, isCardOwner, duel.duelData, currentCardKey)} />}
+      {
+        duel?.duelData && getPlayerBanishedCards(createdDuel, isCardOwner, duel.duelData) &&
+        <BanishedCardsViewer isOpen={isBanishedViewerOpen} setIsOpen={setIsBanishedViewerOpen} cardOwner={isCardOwner} banishedCards={getPlayerBanishedCards(createdDuel, isCardOwner, duel.duelData)} />
+      }
       <CardActions
         isOpen={isCardActionsOpen}
         setIsOpen={setIsCardActionsOpen}
@@ -540,14 +552,22 @@ const DuelMat: React.FC = () => {
             {renderOponentCards()}
             <IonRow>
               <IonCol style={{ height: "15rem" }}>
-                <CardImage style={{ height: "90%" }} placeholderImage="resources\placeholderBanished.png" altText="Banished Slot" />
+                <CardImage
+                  style={{ height: "90%" }}
+                  placeholderImage="resources\placeholderBanished.png"
+                  altText="Opponent Banished Slot"
+                  cardsKey={`${createdDuel ? 'playerB' : 'playerA'}Cards`}
+                  fullCardKey={`${createdDuel ? 'playerB' : 'playerA'}Banished`}
+                  duel={duel}
+                  handleCardActionsOpen={handleBanishedCardViewerOpen}
+                />
               </IonCol>
               <IonCol style={{ height: "15rem" }}>
                 <CardImage
                   style={{ height: "90%" }}
                   placeholderImage="resources\placeholderExtraMonster.png"
                   altText="Extra Monster Card Slot"
-                  shortCardKey="extraMonsterTwo"
+                  shortCardKey={`extraMonster${createdDuel ? 'One' : 'Two'}`}
                   duel={duel}
                   createdDuel={createdDuel}
                   cardOwner
@@ -568,7 +588,7 @@ const DuelMat: React.FC = () => {
                   style={{ height: "90%" }}
                   placeholderImage="resources\placeholderExtraMonster.png"
                   altText="Extra Monster Card Slot"
-                  shortCardKey="extraMonsterOne"
+                  shortCardKey={`extraMonster${createdDuel ? 'Two' : 'One'}`}
                   duel={duel}
                   createdDuel={createdDuel}
                   cardOwner
@@ -576,7 +596,16 @@ const DuelMat: React.FC = () => {
                 />
               </IonCol>
               <IonCol style={{ height: "15rem" }}>
-                <CardImage style={{ height: "90%" }} placeholderImage="resources\placeholderBanished.png" altText="Banished Slot" />
+                <CardImage
+                  style={{ height: "90%" }}
+                  placeholderImage="resources\placeholderBanished.png"
+                  altText="Your Banished Slot"
+                  cardsKey={`${createdDuel ? 'playerA' : 'playerB'}Cards`}
+                  fullCardKey={`${createdDuel ? 'playerA' : 'playerB'}Banished`}
+                  duel={duel}
+                  cardOwner
+                  handleCardActionsOpen={handleBanishedCardViewerOpen}
+                />
               </IonCol>
             </IonRow>
             {renderYourCards()}
