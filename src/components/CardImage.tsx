@@ -57,6 +57,10 @@ const CardImage: React.FC<CardImageProps> = ({
             if (duel.duelData[cardsKey][fullCardKey].length > 0) {
                 cardImage = "resources\\banished.png";
             }
+        } else if (fullCardKey.includes('Graveyard')) {
+            if (duel.duelData[cardsKey][fullCardKey].length > 0) {
+                cardImage = "resources\\graveyard.png";
+            }
         } else if (!duel.duelData[cardsKey][fullCardKey].flipped) {
             cardImage = "resources\\yugiohCard.png";
         } else {
@@ -88,7 +92,7 @@ const CardImage: React.FC<CardImageProps> = ({
 
     const handleCardClick = async () => {
         if (duel && duel.duelId) {
-            if (cardOwner && cardImage === placeholderImage && !placeholderImage.includes('Banished')) {
+            if (cardOwner && cardImage === placeholderImage && !placeholderImage.includes('Banished') && !placeholderImage.includes('Graveyard')) {
                 const newCard = await takePhoto();
                 setTempCardPhoto(newCard);
             } else if (handleCardActionsOpen && cardsKey && fullCardKey) {

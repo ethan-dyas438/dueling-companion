@@ -42,3 +42,20 @@ export const getPlayerBanishedCards = (createdDuel: boolean, isCardOwner: boolea
         }
     }
 }
+
+export const getPlayerGraveyardCards = (createdDuel: boolean, isCardOwner: boolean, duelData: {[key: string]: any}) => {
+    
+    if (createdDuel) {
+        if (isCardOwner) {
+            return duelData.playerACards.playerAGraveyard;
+        } else {
+            return duelData.playerBCards.playerBGraveyard;
+        }
+    } else {
+        if (isCardOwner) {
+            return duelData.playerBCards.playerBGraveyard;
+        } else {
+            return duelData.playerACards.playerAGraveyard;
+        }
+    }
+}

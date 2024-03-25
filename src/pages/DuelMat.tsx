@@ -23,7 +23,7 @@ import './Home.css';
 import useWebSocket, { ReadyState } from 'react-use-websocket';
 import { duelWebsocket } from '../constants/urls';
 import { DUEL_ACTION } from '../constants/duelActions';
-import { getPlayerAttribute, getPlayerBanishedCards, getPlayerCardImage } from '../utils/getPlayerDuelData';
+import { getPlayerAttribute, getPlayerBanishedCards, getPlayerCardImage, getPlayerGraveyardCards } from '../utils/getPlayerDuelData';
 import { updateReadyStatus } from '../utils/updateDuelActions';
 import { Clipboard } from '@capacitor/clipboard';
 import LifePointAlert from '../components/LifePointAlert';
@@ -33,6 +33,7 @@ import { CARD_ACTIONS } from '../constants/cardActions';
 import { CARD_POSITIONS } from '../constants/cardPositions';
 import CardViewer from '../components/CardViewer';
 import BanishedCardsViewer from '../components/BanishedCardsViewer';
+import GraveyardCardsViewer from '../components/GraveyardCardsViewer';
 
 enum PLAYERS {
   A = 'A',
@@ -57,6 +58,7 @@ const DuelMat: React.FC = () => {
   const [isCardActionsOpen, setIsCardActionsOpen] = useState<boolean>(false);
   const [currentCardActions, setCurrentCardActions] = useState<CARD_ACTIONS[]>([]);
   const [isBanishedViewerOpen, setIsBanishedViewerOpen] = useState<boolean>(false);
+  const [isGraveyardViewerOpen, setIsGraveyardViewerOpen] = useState<boolean>(false);
   const [currentCardKey, setCurrentCardKey] = useState<string>("");
   const [isDiceToastOpen, setIsDiceToastOpen] = useState<boolean>(false);
   const [isCopyToastOpen, setIsCopyToastOpen] = useState<boolean>(false);
@@ -186,10 +188,16 @@ const DuelMat: React.FC = () => {
     setIsCardActionsOpen(true);
   };
 
-  const handleBanishedCardViewerOpen = (cardData: { [key: string]: any }, cardKey: string, ownsCard: boolean) => {
+  const handleBanishedCardViewerOpen = (_: any, cardKey: string, ownsCard: boolean) => {
     setCurrentCardKey(cardKey);
     setIsCardOwner(ownsCard);
     setIsBanishedViewerOpen(true);
+  };
+
+  const handleGraveyardCardViewerOpen = (_: any, cardKey: string, ownsCard: boolean) => {
+    setCurrentCardKey(cardKey);
+    setIsCardOwner(ownsCard);
+    setIsGraveyardViewerOpen(true);
   };
 
   const exitDuel = () => {
@@ -271,7 +279,16 @@ const DuelMat: React.FC = () => {
             <CardImage placeholderImage="resources\yugiohCard.png" altText="Extra Deck Slot" /></IonCol>
         </IonRow>
         <IonRow>
-          <IonCol><CardImage placeholderImage="resources\placeholderGraveyard.png" altText="Graveyard Slot" /></IonCol>
+          <IonCol>
+            <CardImage
+              placeholderImage="resources\placeholderGraveyard.png"
+              altText="Graveyard Slot"
+              cardsKey={cardsKey}
+              fullCardKey={`${oponentPlayer}Graveyard`}
+              duel={duel}
+              createdDuel={createdDuel}
+              handleCardActionsOpen={handleGraveyardCardViewerOpen} />
+          </IonCol>
           <IonCol>
             <CardImage
               placeholderImage="resources\placeholderMonster.png"
@@ -428,7 +445,18 @@ const DuelMat: React.FC = () => {
               handleCardActionsOpen={handleCardActionsOpen}
             />
           </IonCol>
-          <IonCol><CardImage placeholderImage="resources\placeholderGraveyard.png" altText="Graveyard Slot" /></IonCol>
+          <IonCol>
+            <CardImage
+              placeholderImage="resources\placeholderGraveyard.png"
+              altText="Graveyard Slot"
+              cardsKey={cardsKey}
+              fullCardKey={`${currentPlayer}Graveyard`}
+              duel={duel}
+              createdDuel={createdDuel}
+              cardOwner
+              handleCardActionsOpen={handleGraveyardCardViewerOpen}
+            />
+          </IonCol>
         </IonRow>
         <IonRow>
           <IonCol><CardImage placeholderImage="resources\yugiohCard.png" altText="Extra Deck Slot" /></IonCol>
@@ -503,7 +531,6 @@ const DuelMat: React.FC = () => {
     );
   }
 
-  // TODO: Implement enlarged image viewer for graveyard it could be a carousel (with actions enabled to banish or play cards again).
   // TODO: Look into issue, where if a image upload is cancelled then a different slot is selected the image still goes to the originally
   //       selected slot. This also applies to other card actions sometimes.
   // TODO: Stop card actions from calling websocket twice
@@ -514,8 +541,28 @@ const DuelMat: React.FC = () => {
       <LifePointAlert isOpen={isLPAlertOpen} setIsOpen={setIsLPAlertOpen} duel={duel} createdDuel={createdDuel} websocketAction={sendJsonMessage} />
       {duel?.duelData && <CardViewer isOpen={isCardViewerOpen} setIsOpen={setIsCardViewerOpen} cardImage={getPlayerCardImage(createdDuel, isCardOwner, duel.duelData, currentCardKey)} />}
       {
-        duel?.duelData && getPlayerBanishedCards(createdDuel, isCardOwner, duel.duelData) &&
-        <BanishedCardsViewer isOpen={isBanishedViewerOpen} setIsOpen={setIsBanishedViewerOpen} cardOwner={isCardOwner} banishedCards={getPlayerBanishedCards(createdDuel, isCardOwner, duel.duelData)} />
+        duel?.duelData && getPlayerBanishedCards(createdDuel, isCardOwner, duel.duelData) && getPlayerBanishedCards(createdDuel, isCardOwner, duel.duelData).length > 0 &&
+        <BanishedCardsViewer
+          isOpen={isBanishedViewerOpen}
+          setIsOpen={setIsBanishedViewerOpen}
+          duel={duel}
+          createdDuel={createdDuel}
+          cardOwner={isCardOwner}
+          banishedCards={getPlayerBanishedCards(createdDuel, isCardOwner, duel.duelData)}
+          sendJsonMessage={sendJsonMessage}
+        />
+      }
+      {
+        duel?.duelData && getPlayerGraveyardCards(createdDuel, isCardOwner, duel.duelData) && getPlayerGraveyardCards(createdDuel, isCardOwner, duel.duelData).length > 0 &&
+          <GraveyardCardsViewer
+            isOpen={isGraveyardViewerOpen}
+            setIsOpen={setIsGraveyardViewerOpen}
+            duel={duel}
+            createdDuel={createdDuel}
+            cardOwner={isCardOwner}
+            graveyardCards={getPlayerGraveyardCards(createdDuel, isCardOwner, duel.duelData)}
+            sendJsonMessage={sendJsonMessage}
+          />
       }
       <CardActions
         isOpen={isCardActionsOpen}

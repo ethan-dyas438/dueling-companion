@@ -4,6 +4,7 @@ import { useEffect } from 'react';
 import { CARD_ACTIONS, CARD_ACTION_TITLES } from '../constants/cardActions';
 import { DUEL_ACTION } from '../constants/duelActions';
 import { CARD_POSITIONS } from '../constants/cardPositions';
+import { card } from 'ionicons/icons';
 
 interface CardImageProps {
     isOpen: boolean;
@@ -43,6 +44,10 @@ const CardActions: React.FC<CardImageProps> = ({
 
     const handleActionsDismissed = (result: OverlayEventDetail) => {
         // TODO: Implement card actions and their effects on the card image
+        const playerToUpdate = createdDuel ? 'playerA' : 'playerB';
+        const currentBanishedCards = duel.duelData[`${playerToUpdate}Cards`][`${playerToUpdate}Banished`];
+        const currentGraveyardCards = duel.duelData[`${playerToUpdate}Cards`][`${playerToUpdate}Graveyard`];
+
         switch (result.data.action) {
             case CARD_ACTIONS.VIEW_CARD:
                 setCardViewerIsOpen(true);
@@ -57,9 +62,6 @@ const CardActions: React.FC<CardImageProps> = ({
                 updateCardState('position', CARD_POSITIONS.DEFENSE);
                 break;
             case CARD_ACTIONS.BANISH:
-                const playerToUpdate = createdDuel ? 'playerA' : 'playerB';
-                const currentBanishedCards = duel.duelData[`${playerToUpdate}Cards`][`${playerToUpdate}Banished`]
-
                 if (cardKey === 'extraMonsterOne' || cardKey === 'extraMonsterTwo') {
                     const banishedCard = duel.duelData[cardKey];
                     websocketAction({
@@ -70,6 +72,30 @@ const CardActions: React.FC<CardImageProps> = ({
                                 [cardKey]: 'delete',
                                 [`${playerToUpdate}Cards`]: {
                                     [`${playerToUpdate}Banished`]: currentBanishedCards ? [...currentBanishedCards, banishedCard] : [banishedCard]
+                                }
+                            }
+                        }
+                    });
+                } else if (cardKey.includes('graveyard-')) {
+                    const graveyardIndex = cardKey.split('-')[1];
+                    const banishedCard = currentGraveyardCards.splice(graveyardIndex, 1);
+
+                    console.log(banishedCard);
+                    console.log({
+                        [`${playerToUpdate}Cards`]: {
+                            [`${playerToUpdate}Graveyard`]: currentGraveyardCards,
+                            [`${playerToUpdate}Banished`]: currentBanishedCards ? [...currentBanishedCards, ...banishedCard] : [...banishedCard]
+                        }
+                    });
+
+                    websocketAction({
+                        action: DUEL_ACTION.UPDATE,
+                        payload: {
+                            duelId: duel.duelId,
+                            duelData: {
+                                [`${playerToUpdate}Cards`]: {
+                                    [`${playerToUpdate}Graveyard`]: currentGraveyardCards,
+                                    [`${playerToUpdate}Banished`]: currentBanishedCards ? [...currentBanishedCards, ...banishedCard] : [...banishedCard]
                                 }
                             }
                         }
@@ -91,7 +117,51 @@ const CardActions: React.FC<CardImageProps> = ({
                 }
                 break;
             case CARD_ACTIONS.SEND_TO_GRAVEYARD:
-                console.log('Implement graveyard action');
+                if (cardKey === 'extraMonsterOne' || cardKey === 'extraMonsterTwo') {
+                    const graveyardCard = duel.duelData[cardKey];
+                    websocketAction({
+                        action: DUEL_ACTION.UPDATE,
+                        payload: {
+                            duelId: duel.duelId,
+                            duelData: {
+                                [cardKey]: 'delete',
+                                [`${playerToUpdate}Cards`]: {
+                                    [`${playerToUpdate}Graveyard`]: currentGraveyardCards ? [...currentGraveyardCards, graveyardCard] : [graveyardCard]
+                                }
+                            }
+                        }
+                    });
+                } else if (cardKey.includes('banished-')) {
+                    const banishedIndex = cardKey.split('-')[1];
+                    const graveyardCard = currentBanishedCards.splice(banishedIndex, 1);
+
+                    websocketAction({
+                        action: DUEL_ACTION.UPDATE,
+                        payload: {
+                            duelId: duel.duelId,
+                            duelData: {
+                                [`${playerToUpdate}Cards`]: {
+                                    [`${playerToUpdate}Banished`]: currentBanishedCards,
+                                    [`${playerToUpdate}Graveyard`]: currentGraveyardCards ? [...currentGraveyardCards, ...graveyardCard] : [...graveyardCard]
+                                }
+                            }
+                        }
+                    });
+                } else {
+                    const graveyardCard = duel.duelData[`${playerToUpdate}Cards`][cardKey];
+                    websocketAction({
+                        action: DUEL_ACTION.UPDATE,
+                        payload: {
+                            duelId: duel.duelId,
+                            duelData: {
+                                [`${playerToUpdate}Cards`]: {
+                                    [cardKey]: null,
+                                    [`${playerToUpdate}Graveyard`]: currentGraveyardCards ? [...currentGraveyardCards, graveyardCard] : [graveyardCard]
+                                }
+                            }
+                        }
+                    });
+                }
                 break;
             case CARD_ACTIONS.TRANSFER_TO_OPPONENT:
                 console.log('Implement transfer action');

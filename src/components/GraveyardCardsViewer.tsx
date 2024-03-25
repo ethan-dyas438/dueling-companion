@@ -1,24 +1,24 @@
-import { IonButton, IonButtons, IonCol, IonContent, IonGrid, IonHeader, IonImg, IonLabel, IonModal, IonRow, IonTitle, IonToolbar } from '@ionic/react';
-import { useEffect, useState } from 'react';
+import { IonButton, IonButtons, IonContent, IonHeader, IonImg, IonModal, IonTitle, IonToolbar } from '@ionic/react';
 import CardActions from './CardActions';
+import { useEffect, useState } from 'react';
 import { CARD_ACTIONS } from '../constants/cardActions';
 
-interface BanishedCardsViewerProps {
+interface GraveyardCardsViewerProps {
     isOpen: boolean;
     setIsOpen: Function;
     duel: { [key: string]: any };
     createdDuel: boolean;
     cardOwner: boolean;
-    banishedCards: { [key: string]: any }[];
+    graveyardCards: { [key: string]: any }[];
     sendJsonMessage: Function;
 }
 
-const BanishedCardsViewer: React.FC<BanishedCardsViewerProps> = ({ isOpen, setIsOpen, duel, createdDuel, cardOwner, banishedCards, sendJsonMessage }) => {
+const GraveyardCardsViewer: React.FC<GraveyardCardsViewerProps> = ({ isOpen, setIsOpen, duel, createdDuel, cardOwner, graveyardCards, sendJsonMessage }) => {
     const [isCardActionsOpen, setIsCardActionsOpen] = useState<boolean>(false);
     const [currentCard, setCurrentCard] = useState<string>("");
 
     useEffect(() => {
-        if (!banishedCards || (banishedCards && banishedCards.length === 0)) {
+        if (!graveyardCards || (graveyardCards && graveyardCards.length === 0)) {
             setIsOpen(false);
         }
     })
@@ -27,7 +27,7 @@ const BanishedCardsViewer: React.FC<BanishedCardsViewerProps> = ({ isOpen, setIs
         <IonModal isOpen={isOpen}>
             <IonHeader>
                 <IonToolbar>
-                    <IonTitle>View Banished Cards</IonTitle>
+                    <IonTitle>View Graveyard Cards</IonTitle>
                     <IonButtons slot="end">
                         <IonButton onClick={() => setIsOpen(false)}>Close</IonButton>
                     </IonButtons>
@@ -38,7 +38,7 @@ const BanishedCardsViewer: React.FC<BanishedCardsViewerProps> = ({ isOpen, setIs
                     <CardActions
                         isOpen={isCardActionsOpen}
                         setIsOpen={setIsCardActionsOpen}
-                        cardActions={[CARD_ACTIONS.TRANSFER_TO_OPPONENT, CARD_ACTIONS.SEND_TO_GRAVEYARD]}
+                        cardActions={[CARD_ACTIONS.TRANSFER_TO_OPPONENT, CARD_ACTIONS.BANISH]}
                         cardKey={currentCard}
                         duel={duel}
                         createdDuel={createdDuel}
@@ -46,27 +46,20 @@ const BanishedCardsViewer: React.FC<BanishedCardsViewerProps> = ({ isOpen, setIs
                         setCardViewerIsOpen={() => {}}
                     />
                 }
-                {cardOwner ?
-                    banishedCards.map((banishedCard, banishedIndex) =>
-                        <IonImg src={banishedCard.cardImage} alt={`Banished Card ${banishedIndex + 1}`} key={`Banished Card ${banishedIndex + 1}`}
+                {
+                    graveyardCards.map((graveyardCard, graveyardIndex) => 
+                        <IonImg src={graveyardCard.cardImage} alt={`Graveyard Card ${graveyardIndex + 1}`} key={`Graveyard Card ${graveyardIndex + 1}`}
                             onClick={() => {
                                 if (cardOwner) {
                                     setIsCardActionsOpen(true);
-                                    setCurrentCard(`banished-${banishedIndex}`);
+                                    setCurrentCard(`graveyard-${graveyardIndex}`);
                                 }
                             }}
                         />
-                    ).reverse() :
-                    <IonGrid>
-                        <IonRow>
-                            <IonCol>
-                                <IonLabel>Opponent has {banishedCards.length} banished cards.</IonLabel>
-                            </IonCol>
-                        </IonRow>
-                    </IonGrid>
+                    ).reverse()
                 }
             </IonContent>
         </IonModal>
     );
 }
-export default BanishedCardsViewer;
+export default GraveyardCardsViewer;
