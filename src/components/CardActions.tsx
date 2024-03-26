@@ -15,6 +15,7 @@ interface CardImageProps {
     createdDuel: boolean;
     websocketAction: Function;
     setCardViewerIsOpen: Function;
+    setIsTransferringCard: Function;
 }
 
 const CardActions: React.FC<CardImageProps> = ({
@@ -25,7 +26,8 @@ const CardActions: React.FC<CardImageProps> = ({
     duel,
     createdDuel,
     websocketAction,
-    setCardViewerIsOpen
+    setCardViewerIsOpen,
+    setIsTransferringCard,
 }) => {
     const updateCardState = (cardProperty: string, cardValue: string | boolean) => {
         if (cardKey.includes('player')) {
@@ -43,7 +45,6 @@ const CardActions: React.FC<CardImageProps> = ({
     }
 
     const handleActionsDismissed = (result: OverlayEventDetail) => {
-        // TODO: Implement card actions and their effects on the card image
         const playerToUpdate = createdDuel ? 'playerA' : 'playerB';
         const currentBanishedCards = duel.duelData[`${playerToUpdate}Cards`][`${playerToUpdate}Banished`];
         const currentGraveyardCards = duel.duelData[`${playerToUpdate}Cards`][`${playerToUpdate}Graveyard`];
@@ -79,14 +80,6 @@ const CardActions: React.FC<CardImageProps> = ({
                 } else if (cardKey.includes('graveyard-')) {
                     const graveyardIndex = cardKey.split('-')[1];
                     const banishedCard = currentGraveyardCards.splice(graveyardIndex, 1);
-
-                    console.log(banishedCard);
-                    console.log({
-                        [`${playerToUpdate}Cards`]: {
-                            [`${playerToUpdate}Graveyard`]: currentGraveyardCards,
-                            [`${playerToUpdate}Banished`]: currentBanishedCards ? [...currentBanishedCards, ...banishedCard] : [...banishedCard]
-                        }
-                    });
 
                     websocketAction({
                         action: DUEL_ACTION.UPDATE,
@@ -163,8 +156,8 @@ const CardActions: React.FC<CardImageProps> = ({
                     });
                 }
                 break;
-            case CARD_ACTIONS.TRANSFER_TO_OPPONENT:
-                console.log('Implement transfer action');
+            case CARD_ACTIONS.TRANSFER_CARD:
+                setIsTransferringCard(true);
                 break;
         }
 

@@ -11,11 +11,19 @@ interface GraveyardCardsViewerProps {
     cardOwner: boolean;
     graveyardCards: { [key: string]: any }[];
     sendJsonMessage: Function;
+    setIsTransferring: Function;
+    setCurrentCardKey: Function;
 }
 
-const GraveyardCardsViewer: React.FC<GraveyardCardsViewerProps> = ({ isOpen, setIsOpen, duel, createdDuel, cardOwner, graveyardCards, sendJsonMessage }) => {
+const GraveyardCardsViewer: React.FC<GraveyardCardsViewerProps> = ({ isOpen, setIsOpen, duel, createdDuel, cardOwner, graveyardCards, sendJsonMessage, setIsTransferring, setCurrentCardKey }) => {
     const [isCardActionsOpen, setIsCardActionsOpen] = useState<boolean>(false);
     const [currentCard, setCurrentCard] = useState<string>("");
+
+    const transferCardHandler = () => {
+        setIsTransferring(true);
+        setCurrentCardKey(currentCard);
+        setIsOpen(false);
+    }
 
     useEffect(() => {
         if (!graveyardCards || (graveyardCards && graveyardCards.length === 0)) {
@@ -38,12 +46,13 @@ const GraveyardCardsViewer: React.FC<GraveyardCardsViewerProps> = ({ isOpen, set
                     <CardActions
                         isOpen={isCardActionsOpen}
                         setIsOpen={setIsCardActionsOpen}
-                        cardActions={[CARD_ACTIONS.TRANSFER_TO_OPPONENT, CARD_ACTIONS.BANISH]}
+                        cardActions={[CARD_ACTIONS.TRANSFER_CARD, CARD_ACTIONS.BANISH]}
                         cardKey={currentCard}
                         duel={duel}
                         createdDuel={createdDuel}
                         websocketAction={sendJsonMessage}
                         setCardViewerIsOpen={() => {}}
+                        setIsTransferringCard={transferCardHandler}
                     />
                 }
                 {

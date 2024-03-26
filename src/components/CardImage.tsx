@@ -16,6 +16,8 @@ interface CardImageProps {
     cardsKey?: string;
     style?: { [key: string]: any };
     handleCardActionsOpen?: Function;
+    transferring?: boolean;
+    handleCardTransfer?: Function;
 }
 
 const CardImage: React.FC<CardImageProps> = ({
@@ -29,6 +31,8 @@ const CardImage: React.FC<CardImageProps> = ({
     cardsKey,
     style,
     handleCardActionsOpen,
+    transferring,
+    handleCardTransfer,
 }) => {
     const { takePhoto } = useCardPhotos();
     const [tempCardPhoto, setTempCardPhoto] = useState<Photo>();
@@ -92,7 +96,16 @@ const CardImage: React.FC<CardImageProps> = ({
 
     const handleCardClick = async () => {
         if (duel && duel.duelId) {
-            if (cardOwner && cardImage === placeholderImage && !placeholderImage.includes('Banished') && !placeholderImage.includes('Graveyard')) {
+            if (transferring && handleCardTransfer) {
+                if (cardsKey && fullCardKey) {
+                    handleCardTransfer(fullCardKey);
+                } else if (
+                    shortCardKey &&
+                    (shortCardKey === 'extraMonsterOne' || shortCardKey === 'extraMonsterTwo')
+                ) {
+                    handleCardTransfer(shortCardKey);
+                }
+            } else if (cardOwner && cardImage === placeholderImage && !placeholderImage.includes('Banished') && !placeholderImage.includes('Graveyard')) {
                 const newCard = await takePhoto();
                 setTempCardPhoto(newCard);
             } else if (handleCardActionsOpen && cardsKey && fullCardKey) {
@@ -129,10 +142,19 @@ const CardImage: React.FC<CardImageProps> = ({
         return '0.6'
     }
 
+    const getBorder = () => {
+        if (duel && cardsKey && fullCardKey && !duel.duelData[cardsKey][fullCardKey] && transferring) {
+            return '3px solid green'
+        } else if (duel && shortCardKey && (shortCardKey === 'extraMonsterOne' || shortCardKey === 'extraMonsterTwo') && !duel.duelData[shortCardKey] && transferring) {
+            return '3px solid green'
+        }
+        return 'none'
+    }
+
     return (
         <>
             <IonLoading isOpen={uploadingCard} message="Uploading Card..." />
-            <IonImg style={ { ...style, padding: "0 15px", rotate: getRotation(), opacity: getOpacity() }} src={cardImage} alt={altText} onClick={handleCardClick} />
+            <IonImg style={ { ...style, padding: "0 15px", rotate: getRotation(), opacity: getOpacity(), border: getBorder(), borderRadius: '5%' }} src={cardImage} alt={altText} onClick={handleCardClick} />
 
             <IonAlert
                 isOpen={positionAlertOpen}

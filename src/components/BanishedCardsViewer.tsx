@@ -11,11 +11,19 @@ interface BanishedCardsViewerProps {
     cardOwner: boolean;
     banishedCards: { [key: string]: any }[];
     sendJsonMessage: Function;
+    setIsTransferring: Function;
+    setCurrentCardKey: Function;
 }
 
-const BanishedCardsViewer: React.FC<BanishedCardsViewerProps> = ({ isOpen, setIsOpen, duel, createdDuel, cardOwner, banishedCards, sendJsonMessage }) => {
+const BanishedCardsViewer: React.FC<BanishedCardsViewerProps> = ({ isOpen, setIsOpen, duel, createdDuel, cardOwner, banishedCards, sendJsonMessage, setIsTransferring, setCurrentCardKey }) => {
     const [isCardActionsOpen, setIsCardActionsOpen] = useState<boolean>(false);
     const [currentCard, setCurrentCard] = useState<string>("");
+
+    const transferCardHandler = () => {
+        setIsTransferring(true);
+        setCurrentCardKey(currentCard);
+        setIsOpen(false);
+    }
 
     useEffect(() => {
         if (!banishedCards || (banishedCards && banishedCards.length === 0)) {
@@ -38,12 +46,13 @@ const BanishedCardsViewer: React.FC<BanishedCardsViewerProps> = ({ isOpen, setIs
                     <CardActions
                         isOpen={isCardActionsOpen}
                         setIsOpen={setIsCardActionsOpen}
-                        cardActions={[CARD_ACTIONS.TRANSFER_TO_OPPONENT, CARD_ACTIONS.SEND_TO_GRAVEYARD]}
+                        cardActions={[CARD_ACTIONS.TRANSFER_CARD, CARD_ACTIONS.SEND_TO_GRAVEYARD]}
                         cardKey={currentCard}
                         duel={duel}
                         createdDuel={createdDuel}
                         websocketAction={sendJsonMessage}
                         setCardViewerIsOpen={() => {}}
+                        setIsTransferringCard={transferCardHandler}
                     />
                 }
                 {cardOwner ?

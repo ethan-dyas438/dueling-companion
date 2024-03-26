@@ -1,5 +1,6 @@
 import { useContext, useEffect, useState } from 'react';
 import {
+  IonAlert,
   IonButton,
   IonCol,
   IonContent,
@@ -24,7 +25,7 @@ import useWebSocket, { ReadyState } from 'react-use-websocket';
 import { duelWebsocket } from '../constants/urls';
 import { DUEL_ACTION } from '../constants/duelActions';
 import { getPlayerAttribute, getPlayerBanishedCards, getPlayerCardImage, getPlayerGraveyardCards } from '../utils/getPlayerDuelData';
-import { updateReadyStatus } from '../utils/updateDuelActions';
+import { transferCard, updateReadyStatus } from '../utils/updateDuelActions';
 import { Clipboard } from '@capacitor/clipboard';
 import LifePointAlert from '../components/LifePointAlert';
 import CardImage from '../components/CardImage';
@@ -59,6 +60,9 @@ const DuelMat: React.FC = () => {
   const [currentCardActions, setCurrentCardActions] = useState<CARD_ACTIONS[]>([]);
   const [isBanishedViewerOpen, setIsBanishedViewerOpen] = useState<boolean>(false);
   const [isGraveyardViewerOpen, setIsGraveyardViewerOpen] = useState<boolean>(false);
+  const [isPlayerAlertOpen, setIsPlayerAlertOpen] = useState<boolean>(false);
+  const [extraMonsterNewKey, setExtraMonsterNewKey] = useState<string>("");
+  const [isTransferring, setIsTransferring] = useState<boolean>(false);
   const [currentCardKey, setCurrentCardKey] = useState<string>("");
   const [isDiceToastOpen, setIsDiceToastOpen] = useState<boolean>(false);
   const [isCopyToastOpen, setIsCopyToastOpen] = useState<boolean>(false);
@@ -167,7 +171,7 @@ const DuelMat: React.FC = () => {
       if (!cardData.flipped) {
         validActions.push(CARD_ACTIONS.ACTIVATE_CARD);
       } else {
-        validActions.push(CARD_ACTIONS.TRANSFER_TO_OPPONENT);
+        validActions.push(CARD_ACTIONS.TRANSFER_CARD);
         validActions.push(CARD_ACTIONS.BANISH);
         validActions.push(CARD_ACTIONS.SEND_TO_GRAVEYARD);
   
@@ -187,6 +191,16 @@ const DuelMat: React.FC = () => {
     setIsCardOwner(ownsCard);
     setIsCardActionsOpen(true);
   };
+
+  const handleCardTransfer = (cardKey: string) => {
+    if (cardKey === 'extraMonsterOne' || cardKey === 'extraMonsterTwo') {
+      setExtraMonsterNewKey(cardKey);
+      setIsPlayerAlertOpen(true);
+    } else {
+      transferCard(currentCardKey, cardKey, duel.duelData, createdDuel, duel.duelId, sendJsonMessage);
+      setIsTransferring(false);
+    }
+  }
 
   const handleBanishedCardViewerOpen = (_: any, cardKey: string, ownsCard: boolean) => {
     setCurrentCardKey(cardKey);
@@ -229,6 +243,8 @@ const DuelMat: React.FC = () => {
               duel={duel}
               shortCardKey="SpellTrapFive"
               handleCardActionsOpen={handleCardActionsOpen}
+              transferring={isTransferring}
+              handleCardTransfer={handleCardTransfer}
             />
           </IonCol>
           <IonCol>
@@ -240,6 +256,8 @@ const DuelMat: React.FC = () => {
               duel={duel}
               shortCardKey="SpellTrapFour"
               handleCardActionsOpen={handleCardActionsOpen}
+              transferring={isTransferring}
+              handleCardTransfer={handleCardTransfer}
             />
           </IonCol>
           <IonCol>
@@ -251,6 +269,8 @@ const DuelMat: React.FC = () => {
               duel={duel}
               shortCardKey="SpellTrapThree"
               handleCardActionsOpen={handleCardActionsOpen}
+              transferring={isTransferring}
+              handleCardTransfer={handleCardTransfer}
             />
           </IonCol>
           <IonCol>
@@ -262,6 +282,8 @@ const DuelMat: React.FC = () => {
               duel={duel}
               shortCardKey="SpellTrapTwo"
               handleCardActionsOpen={handleCardActionsOpen}
+              transferring={isTransferring}
+              handleCardTransfer={handleCardTransfer}
             />
           </IonCol>
           <IonCol>
@@ -273,6 +295,8 @@ const DuelMat: React.FC = () => {
               duel={duel}
               shortCardKey="SpellTrapOne"
               handleCardActionsOpen={handleCardActionsOpen}
+              transferring={isTransferring}
+              handleCardTransfer={handleCardTransfer}
             />
           </IonCol>
           <IonCol>
@@ -298,6 +322,8 @@ const DuelMat: React.FC = () => {
               duel={duel}
               shortCardKey="MonsterFive"
               handleCardActionsOpen={handleCardActionsOpen}
+              transferring={isTransferring}
+              handleCardTransfer={handleCardTransfer}
             />
           </IonCol>
           <IonCol>
@@ -309,6 +335,8 @@ const DuelMat: React.FC = () => {
               duel={duel}
               shortCardKey="MonsterFour"
               handleCardActionsOpen={handleCardActionsOpen}
+              transferring={isTransferring}
+              handleCardTransfer={handleCardTransfer}
             />
           </IonCol>
           <IonCol>
@@ -320,6 +348,8 @@ const DuelMat: React.FC = () => {
               duel={duel}
               shortCardKey="MonsterThree"
               handleCardActionsOpen={handleCardActionsOpen}
+              transferring={isTransferring}
+              handleCardTransfer={handleCardTransfer}
             />
           </IonCol>
           <IonCol>
@@ -331,6 +361,8 @@ const DuelMat: React.FC = () => {
               duel={duel}
               shortCardKey="MonsterTwo"
               handleCardActionsOpen={handleCardActionsOpen}
+              transferring={isTransferring}
+              handleCardTransfer={handleCardTransfer}
             />
           </IonCol>
           <IonCol>
@@ -342,6 +374,8 @@ const DuelMat: React.FC = () => {
               duel={duel}
               shortCardKey="MonsterOne"
               handleCardActionsOpen={handleCardActionsOpen}
+              transferring={isTransferring}
+              handleCardTransfer={handleCardTransfer}
             />
           </IonCol>
           <IonCol>
@@ -353,6 +387,8 @@ const DuelMat: React.FC = () => {
               duel={duel}
               shortCardKey="FieldSpell"
               handleCardActionsOpen={handleCardActionsOpen}
+              transferring={isTransferring}
+              handleCardTransfer={handleCardTransfer}
             />
           </IonCol>
         </IonRow>
@@ -378,6 +414,8 @@ const DuelMat: React.FC = () => {
               createdDuel={createdDuel}
               cardOwner
               handleCardActionsOpen={handleCardActionsOpen}
+              transferring={isTransferring}
+              handleCardTransfer={handleCardTransfer}
             />
           </IonCol>
           <IonCol>
@@ -391,6 +429,8 @@ const DuelMat: React.FC = () => {
               createdDuel={createdDuel}
               cardOwner
               handleCardActionsOpen={handleCardActionsOpen}
+              transferring={isTransferring}
+              handleCardTransfer={handleCardTransfer}
             />
           </IonCol>
           <IonCol>
@@ -404,6 +444,8 @@ const DuelMat: React.FC = () => {
               createdDuel={createdDuel}
               cardOwner
               handleCardActionsOpen={handleCardActionsOpen}
+              transferring={isTransferring}
+              handleCardTransfer={handleCardTransfer}
             />
           </IonCol>
           <IonCol>
@@ -417,6 +459,8 @@ const DuelMat: React.FC = () => {
               createdDuel={createdDuel}
               cardOwner
               handleCardActionsOpen={handleCardActionsOpen}
+              transferring={isTransferring}
+              handleCardTransfer={handleCardTransfer}
             />
           </IonCol>
           <IonCol>
@@ -430,6 +474,8 @@ const DuelMat: React.FC = () => {
               createdDuel={createdDuel}
               cardOwner
               handleCardActionsOpen={handleCardActionsOpen}
+              transferring={isTransferring}
+              handleCardTransfer={handleCardTransfer}
             />
           </IonCol>
           <IonCol>
@@ -443,6 +489,8 @@ const DuelMat: React.FC = () => {
               createdDuel={createdDuel}
               cardOwner
               handleCardActionsOpen={handleCardActionsOpen}
+              transferring={isTransferring}
+              handleCardTransfer={handleCardTransfer}
             />
           </IonCol>
           <IonCol>
@@ -471,6 +519,8 @@ const DuelMat: React.FC = () => {
               createdDuel={createdDuel}
               cardOwner
               handleCardActionsOpen={handleCardActionsOpen}
+              transferring={isTransferring}
+              handleCardTransfer={handleCardTransfer}
             />
           </IonCol>
           <IonCol>
@@ -484,6 +534,8 @@ const DuelMat: React.FC = () => {
               createdDuel={createdDuel}
               cardOwner
               handleCardActionsOpen={handleCardActionsOpen}
+              transferring={isTransferring}
+              handleCardTransfer={handleCardTransfer}
             />
           </IonCol>
           <IonCol>
@@ -497,6 +549,8 @@ const DuelMat: React.FC = () => {
               createdDuel={createdDuel}
               cardOwner
               handleCardActionsOpen={handleCardActionsOpen}
+              transferring={isTransferring}
+              handleCardTransfer={handleCardTransfer}
             />
           </IonCol>
           <IonCol>
@@ -510,6 +564,8 @@ const DuelMat: React.FC = () => {
               createdDuel={createdDuel}
               cardOwner
               handleCardActionsOpen={handleCardActionsOpen}
+              transferring={isTransferring}
+              handleCardTransfer={handleCardTransfer}
             />
           </IonCol>
           <IonCol>
@@ -523,6 +579,8 @@ const DuelMat: React.FC = () => {
               createdDuel={createdDuel}
               cardOwner
               handleCardActionsOpen={handleCardActionsOpen}
+              transferring={isTransferring}
+              handleCardTransfer={handleCardTransfer}
             />
           </IonCol>
           <IonCol><CardImage placeholderImage="resources\yugiohCard.png" altText="Main Deck Slot" /></IonCol>
@@ -531,9 +589,9 @@ const DuelMat: React.FC = () => {
     );
   }
 
+  // TODO: Fix join new duel always attempting rejoin on the first try
   // TODO: Look into issue, where if a image upload is cancelled then a different slot is selected the image still goes to the originally
   //       selected slot. This also applies to other card actions sometimes.
-  // TODO: Stop card actions from calling websocket twice
 
   return (
     <IonPage id="duel-mat-page" style={{ overflowY: "scroll" }}>
@@ -550,6 +608,8 @@ const DuelMat: React.FC = () => {
           cardOwner={isCardOwner}
           banishedCards={getPlayerBanishedCards(createdDuel, isCardOwner, duel.duelData)}
           sendJsonMessage={sendJsonMessage}
+          setIsTransferring={setIsTransferring}
+          setCurrentCardKey={setCurrentCardKey}
         />
       }
       {
@@ -562,6 +622,8 @@ const DuelMat: React.FC = () => {
             cardOwner={isCardOwner}
             graveyardCards={getPlayerGraveyardCards(createdDuel, isCardOwner, duel.duelData)}
             sendJsonMessage={sendJsonMessage}
+            setIsTransferring={setIsTransferring}
+          setCurrentCardKey={setCurrentCardKey}
           />
       }
       <CardActions
@@ -573,6 +635,7 @@ const DuelMat: React.FC = () => {
         createdDuel={createdDuel}
         websocketAction={sendJsonMessage}
         setCardViewerIsOpen={setIsCardViewerOpen}
+        setIsTransferringCard={setIsTransferring}
       />
 
       <IonContent>
@@ -596,6 +659,7 @@ const DuelMat: React.FC = () => {
           </IonGrid>
           :
           <IonGrid>
+            { isTransferring && <IonButton onClick={() => setIsTransferring(false)}>Cancel Transfer</IonButton> }
             {renderOponentCards()}
             <IonRow>
               <IonCol style={{ height: "15rem" }}>
@@ -619,6 +683,8 @@ const DuelMat: React.FC = () => {
                   createdDuel={createdDuel}
                   cardOwner
                   handleCardActionsOpen={handleCardActionsOpen}
+                  transferring={isTransferring}
+                  handleCardTransfer={handleCardTransfer}
                 />
               </IonCol>
               <IonCol>
@@ -640,6 +706,8 @@ const DuelMat: React.FC = () => {
                   createdDuel={createdDuel}
                   cardOwner
                   handleCardActionsOpen={handleCardActionsOpen}
+                  transferring={isTransferring}
+                  handleCardTransfer={handleCardTransfer}
                 />
               </IonCol>
               <IonCol style={{ height: "15rem" }}>
@@ -730,6 +798,45 @@ const DuelMat: React.FC = () => {
         icon={checkmarkCircle}
         duration={5000}
       />
+      <IonAlert
+                isOpen={isPlayerAlertOpen}
+                header="Choose Card Owner"
+                message="Which player owns this extra monster card?"
+                inputs={[
+                    {
+                        label: 'You',
+                        type: 'radio',
+                        value: true,
+                        checked: true
+                    },
+                    {
+                        label: 'Opponent',
+                        type: 'radio',
+                        value: false,
+                    }
+                ]}
+                buttons={['Submit']}
+                onDidDismiss={({ detail }) => {
+                  let playerToTransferTo
+
+                  if (createdDuel) {
+                    if (detail.data.values) {
+                      playerToTransferTo = PLAYERS.A;
+                    } else {
+                      playerToTransferTo = PLAYERS.B;
+                    }
+                  } else {
+                    if (detail.data.values) {
+                      playerToTransferTo = PLAYERS.B;
+                    } else {
+                      playerToTransferTo = PLAYERS.A;
+                    }
+                  }
+                  transferCard(currentCardKey, extraMonsterNewKey, duel.duelData, createdDuel, duel.duelId, sendJsonMessage, playerToTransferTo.toLowerCase());
+                  setIsTransferring(false);
+                  setIsPlayerAlertOpen(false);
+                }}
+            />
     </IonPage>
   );
 }
