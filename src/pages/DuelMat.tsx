@@ -50,7 +50,7 @@ const DuelMat: React.FC = () => {
   const [loadingDuel, setLoadingDuel] = useState<boolean>(true);
   const [activeWebSocket, setActiveWebSocket] = useState<boolean>(true);
   const [createdDuel, setCreatedDuel] = useState<boolean>(localStorage.getItem('createdDuel') === 'true' || false);
-  const [duel, setDuel] = useState<{ [key: string]: any }>(JSON.parse(localStorage.getItem('duel') || 'null'));
+  const [duel, setDuel] = useState<{ [key: string]: any }>();
   // const [turnActive, setTurnActive] = useState<boolean>(false);
   const [diceResult, setDiceResult] = useState<number>(0);
   const [isLPAlertOpen, setIsLPAlertOpen] = useState<boolean>(false);
@@ -67,14 +67,6 @@ const DuelMat: React.FC = () => {
   const [isDiceToastOpen, setIsDiceToastOpen] = useState<boolean>(false);
   const [isCopyToastOpen, setIsCopyToastOpen] = useState<boolean>(false);
   const { sendJsonMessage, readyState } = useWebSocket(duelWebsocket, {
-    onOpen: () => {
-      if (duel) {
-        sendJsonMessage({
-          action: DUEL_ACTION.REJOIN,
-          payload: { duelId, oldConnectionId: localStorage.getItem('oldConnectionId') }
-        });
-      }
-    },
     onMessage: (event) => {
       const formattedDuelData = JSON.parse(event.data).payload;
       localStorage.setItem('duel', JSON.stringify(formattedDuelData));
@@ -96,15 +88,24 @@ const DuelMat: React.FC = () => {
   });
 
   useEffect(() => {
-    if (!duel && duelId && activeWebSocket && readyState === ReadyState.OPEN) {
-      if (create === 'true') {
-        sendJsonMessage({
-          action: DUEL_ACTION.CREATE,
-          payload: { duelId }
-        });
-        localStorage.setItem('createdDuel', 'true');
-        setCreatedDuel(true);
-      } else {
+    if (duelId && activeWebSocket && readyState === ReadyState.OPEN) {
+      if (!duel && !localStorage.getItem('duel')) {
+        if (create === 'true') {
+          sendJsonMessage({
+            action: DUEL_ACTION.CREATE,
+            payload: { duelId }
+          });
+          localStorage.setItem('createdDuel', 'true');
+          setCreatedDuel(true);
+        } else {
+          sendJsonMessage({
+            action: DUEL_ACTION.JOIN,
+            payload: { duelId }
+          });
+          localStorage.setItem('createdDuel', 'false');
+          setCreatedDuel(false);
+        }
+      } else if (!duel && localStorage.getItem('duel')) {
         const localDuel = JSON.parse(localStorage.getItem('duel') || 'null');
         const oldConnectionId = localStorage.getItem('oldConnectionId');
 
@@ -197,7 +198,7 @@ const DuelMat: React.FC = () => {
       setExtraMonsterNewKey(cardKey);
       setIsPlayerAlertOpen(true);
     } else {
-      transferCard(currentCardKey, cardKey, duel.duelData, createdDuel, duel.duelId, sendJsonMessage);
+      transferCard(currentCardKey, cardKey, duel?.duelData, createdDuel, duel?.duelId, sendJsonMessage);
       setIsTransferring(false);
     }
   }
@@ -589,14 +590,10 @@ const DuelMat: React.FC = () => {
     );
   }
 
-  // TODO: Fix join new duel always attempting rejoin on the first try
-  // TODO: Look into issue, where if a image upload is cancelled then a different slot is selected the image still goes to the originally
-  //       selected slot. This also applies to other card actions sometimes.
-
   return (
     <IonPage id="duel-mat-page" style={{ overflowY: "scroll" }}>
       <IonLoading isOpen={loadingDuel} message="Loading Duel..." />
-      <LifePointAlert isOpen={isLPAlertOpen} setIsOpen={setIsLPAlertOpen} duel={duel} createdDuel={createdDuel} websocketAction={sendJsonMessage} />
+      {duel?.duelData && <LifePointAlert isOpen={isLPAlertOpen} setIsOpen={setIsLPAlertOpen} duel={duel} createdDuel={createdDuel} websocketAction={sendJsonMessage} />}
       {duel?.duelData && <CardViewer isOpen={isCardViewerOpen} setIsOpen={setIsCardViewerOpen} cardImage={getPlayerCardImage(createdDuel, isCardOwner, duel.duelData, currentCardKey)} />}
       {
         duel?.duelData && getPlayerBanishedCards(createdDuel, isCardOwner, duel.duelData) && getPlayerBanishedCards(createdDuel, isCardOwner, duel.duelData).length > 0 &&
@@ -631,7 +628,7 @@ const DuelMat: React.FC = () => {
         setIsOpen={setIsCardActionsOpen}
         cardActions={currentCardActions}
         cardKey={currentCardKey || ""}
-        duel={duel}
+        duel={duel || {}}
         createdDuel={createdDuel}
         websocketAction={sendJsonMessage}
         setCardViewerIsOpen={setIsCardViewerOpen}
@@ -798,45 +795,47 @@ const DuelMat: React.FC = () => {
         icon={checkmarkCircle}
         duration={5000}
       />
-      <IonAlert
-                isOpen={isPlayerAlertOpen}
-                header="Choose Card Owner"
-                message="Which player owns this extra monster card?"
-                inputs={[
-                    {
-                        label: 'You',
-                        type: 'radio',
-                        value: true,
-                        checked: true
-                    },
-                    {
-                        label: 'Opponent',
-                        type: 'radio',
-                        value: false,
-                    }
-                ]}
-                buttons={['Submit']}
-                onDidDismiss={({ detail }) => {
-                  let playerToTransferTo
+      {duel?.duelData &&
+        <IonAlert
+          isOpen={isPlayerAlertOpen}
+          header="Choose Card Owner"
+          message="Which player owns this extra monster card?"
+          inputs={[
+              {
+                  label: 'You',
+                  type: 'radio',
+                  value: true,
+                  checked: true
+              },
+              {
+                  label: 'Opponent',
+                  type: 'radio',
+                  value: false,
+              }
+          ]}
+          buttons={['Submit']}
+          onDidDismiss={({ detail }) => {
+            let playerToTransferTo
 
-                  if (createdDuel) {
-                    if (detail.data.values) {
-                      playerToTransferTo = PLAYERS.A;
-                    } else {
-                      playerToTransferTo = PLAYERS.B;
-                    }
-                  } else {
-                    if (detail.data.values) {
-                      playerToTransferTo = PLAYERS.B;
-                    } else {
-                      playerToTransferTo = PLAYERS.A;
-                    }
-                  }
-                  transferCard(currentCardKey, extraMonsterNewKey, duel.duelData, createdDuel, duel.duelId, sendJsonMessage, playerToTransferTo.toLowerCase());
-                  setIsTransferring(false);
-                  setIsPlayerAlertOpen(false);
-                }}
-            />
+            if (createdDuel) {
+              if (detail.data.values) {
+                playerToTransferTo = PLAYERS.A;
+              } else {
+                playerToTransferTo = PLAYERS.B;
+              }
+            } else {
+              if (detail.data.values) {
+                playerToTransferTo = PLAYERS.B;
+              } else {
+                playerToTransferTo = PLAYERS.A;
+              }
+            }
+            transferCard(currentCardKey, extraMonsterNewKey, duel.duelData, createdDuel, duel.duelId, sendJsonMessage, playerToTransferTo.toLowerCase());
+            setIsTransferring(false);
+            setIsPlayerAlertOpen(false);
+          }}
+        />
+      }
     </IonPage>
   );
 }

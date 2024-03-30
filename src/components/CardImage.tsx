@@ -108,7 +108,7 @@ const CardImage: React.FC<CardImageProps> = ({
             } else if (cardOwner && cardImage === placeholderImage && !placeholderImage.includes('Banished') && !placeholderImage.includes('Graveyard')) {
                 const newCard = await takePhoto();
                 setTempCardPhoto(newCard);
-            } else if (handleCardActionsOpen && cardsKey && fullCardKey) {
+            } else if (handleCardActionsOpen && cardsKey && fullCardKey && cardImage !== placeholderImage) {
                 handleCardActionsOpen(duel.duelData[cardsKey][fullCardKey], fullCardKey, !!cardOwner);
             } else if (
                 handleCardActionsOpen &&

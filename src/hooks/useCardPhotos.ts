@@ -4,15 +4,20 @@ import { Camera, CameraResultType, CameraSource, Photo } from '@capacitor/camera
 // import { Capacitor } from '@capacitor/core';
 
 export function useCardPhotos() {
+    // TODO: Reduce image quality and maybe disable image uploads
     const takePhoto = async () => {
-        const photo = await Camera.getPhoto({
-            resultType: CameraResultType.Base64,
-            quality: 100,
-            allowEditing: true,
-        });
-
-        if (photo.base64String) {
-            return photo;
+        try {
+            const photo = await Camera.getPhoto({
+                resultType: CameraResultType.Base64,
+                quality: 100,
+                allowEditing: true,
+            });
+    
+            if (photo.base64String) {
+                return photo;
+            }
+        } catch (e) {
+            console.log('Image capture cancelled.')
         }
     };
 
