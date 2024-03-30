@@ -1,16 +1,16 @@
-import { Camera, CameraResultType, CameraSource, Photo } from '@capacitor/camera';
+import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
 // import { Filesystem, Directory } from '@capacitor/filesystem';
 // import { Preferences } from '@capacitor/preferences';
 // import { Capacitor } from '@capacitor/core';
 
 export function useCardPhotos() {
-    // TODO: Reduce image quality and maybe disable image uploads
     const takePhoto = async () => {
         try {
             const photo = await Camera.getPhoto({
                 resultType: CameraResultType.Base64,
-                quality: 100,
-                allowEditing: true,
+                source: CameraSource.Camera,
+                quality: 80,
+                allowEditing: false,
             });
     
             if (photo.base64String) {
