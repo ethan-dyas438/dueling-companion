@@ -234,10 +234,10 @@ const DuelMat: React.FC = () => {
     return (
       <>
         <IonRow>
-          <IonCol><CardImage placeholderImage="assets\img\yugiohCard.png" altText="Main Deck Slot" /></IonCol>
+          <IonCol><CardImage placeholderImage="assets/img/yugiohCard.png" altText="Main Deck Slot" /></IonCol>
           <IonCol>
             <CardImage
-              placeholderImage="assets\img\placeholderSpellTrap.png"
+              placeholderImage="assets/img/placeholderSpellTrap.png"
               altText="Spell/Trap Card Slot"
               cardsKey={cardsKey}
               fullCardKey={`${oponentPlayer}SpellTrapFive`}
@@ -250,7 +250,7 @@ const DuelMat: React.FC = () => {
           </IonCol>
           <IonCol>
             <CardImage
-              placeholderImage="assets\img\placeholderSpellTrap.png"
+              placeholderImage="assets/img/placeholderSpellTrap.png"
               altText="Spell/Trap Card Slot"
               cardsKey={cardsKey}
               fullCardKey={`${oponentPlayer}SpellTrapFour`}
@@ -263,7 +263,7 @@ const DuelMat: React.FC = () => {
           </IonCol>
           <IonCol>
             <CardImage
-              placeholderImage="assets\img\placeholderSpellTrap.png"
+              placeholderImage="assets/img/placeholderSpellTrap.png"
               altText="Spell/Trap Card Slot"
               cardsKey={cardsKey}
               fullCardKey={`${oponentPlayer}SpellTrapThree`}
@@ -276,7 +276,7 @@ const DuelMat: React.FC = () => {
           </IonCol>
           <IonCol>
             <CardImage
-              placeholderImage="assets\img\placeholderSpellTrap.png"
+              placeholderImage="assets/img/placeholderSpellTrap.png"
               altText="Spell/Trap Card Slot"
               cardsKey={cardsKey}
               fullCardKey={`${oponentPlayer}SpellTrapTwo`}
@@ -289,7 +289,7 @@ const DuelMat: React.FC = () => {
           </IonCol>
           <IonCol>
             <CardImage
-              placeholderImage="assets\img\placeholderSpellTrap.png"
+              placeholderImage="assets/img/placeholderSpellTrap.png"
               altText="Spell/Trap Card Slot"
               cardsKey={cardsKey}
               fullCardKey={`${oponentPlayer}SpellTrapOne`}
@@ -301,12 +301,12 @@ const DuelMat: React.FC = () => {
             />
           </IonCol>
           <IonCol>
-            <CardImage placeholderImage="assets\img\yugiohCard.png" altText="Extra Deck Slot" /></IonCol>
+            <CardImage placeholderImage="assets/img/yugiohCard.png" altText="Extra Deck Slot" /></IonCol>
         </IonRow>
         <IonRow>
           <IonCol>
             <CardImage
-              placeholderImage="assets\img\placeholderGraveyard.png"
+              placeholderImage="assets/img/placeholderGraveyard.png"
               altText="Graveyard Slot"
               cardsKey={cardsKey}
               fullCardKey={`${oponentPlayer}Graveyard`}
@@ -316,7 +316,7 @@ const DuelMat: React.FC = () => {
           </IonCol>
           <IonCol>
             <CardImage
-              placeholderImage="assets\img\placeholderMonster.png"
+              placeholderImage="assets/img/placeholderMonster.png"
               altText="Monster Card Slot"
               cardsKey={cardsKey}
               fullCardKey={`${oponentPlayer}MonsterFive`}
@@ -329,7 +329,7 @@ const DuelMat: React.FC = () => {
           </IonCol>
           <IonCol>
             <CardImage
-              placeholderImage="assets\img\placeholderMonster.png"
+              placeholderImage="assets/img/placeholderMonster.png"
               altText="Monster Card Slot"
               cardsKey={cardsKey}
               fullCardKey={`${oponentPlayer}MonsterFour`}
@@ -342,7 +342,7 @@ const DuelMat: React.FC = () => {
           </IonCol>
           <IonCol>
             <CardImage
-              placeholderImage="assets\img\placeholderMonster.png"
+              placeholderImage="assets/img/placeholderMonster.png"
               altText="Monster Card Slot"
               cardsKey={cardsKey}
               fullCardKey={`${oponentPlayer}MonsterThree`}
@@ -355,7 +355,7 @@ const DuelMat: React.FC = () => {
           </IonCol>
           <IonCol>
             <CardImage
-              placeholderImage="assets\img\placeholderMonster.png"
+              placeholderImage="assets/img/placeholderMonster.png"
               altText="Monster Card Slot"
               cardsKey={cardsKey}
               fullCardKey={`${oponentPlayer}MonsterTwo`}
@@ -368,7 +368,7 @@ const DuelMat: React.FC = () => {
           </IonCol>
           <IonCol>
             <CardImage
-              placeholderImage="assets\img\placeholderMonster.png"
+              placeholderImage="assets/img/placeholderMonster.png"
               altText="Monster Card Slot"
               cardsKey={cardsKey}
               fullCardKey={`${oponentPlayer}MonsterOne`}
@@ -381,7 +381,7 @@ const DuelMat: React.FC = () => {
           </IonCol>
           <IonCol>
             <CardImage
-              placeholderImage="assets\img\placeholderFieldZone.png"
+              placeholderImage="assets/img/placeholderFieldZone.png"
               altText="Field Spell Slot"
               cardsKey={cardsKey}
               fullCardKey={`${oponentPlayer}FieldSpell`}
@@ -406,7 +406,7 @@ const DuelMat: React.FC = () => {
         <IonRow>
           <IonCol>
             <CardImage
-              placeholderImage="assets\img\placeholderFieldZone.png"
+              placeholderImage="assets/img/placeholderFieldZone.png"
               altText="Field Spell Slot"
               cardsKey={cardsKey}
               fullCardKey={`${currentPlayer}FieldSpell`}
@@ -421,7 +421,7 @@ const DuelMat: React.FC = () => {
           </IonCol>
           <IonCol>
             <CardImage
-              placeholderImage="assets\img\placeholderMonster.png"
+              placeholderImage="assets/img/placeholderMonster.png"
               altText="Monster Card Slot"
               cardsKey={cardsKey}
               fullCardKey={`${currentPlayer}MonsterOne`}
@@ -436,7 +436,7 @@ const DuelMat: React.FC = () => {
           </IonCol>
           <IonCol>
             <CardImage
-              placeholderImage="assets\img\placeholderMonster.png"
+              placeholderImage="assets/img/placeholderMonster.png"
               altText="Monster Card Slot"
               cardsKey={cardsKey}
               fullCardKey={`${currentPlayer}MonsterTwo`}
@@ -451,7 +451,7 @@ const DuelMat: React.FC = () => {
           </IonCol>
           <IonCol>
             <CardImage
-              placeholderImage="assets\img\placeholderMonster.png"
+              placeholderImage="assets/img/placeholderMonster.png"
               altText="Monster Card Slot"
               cardsKey={cardsKey}
               fullCardKey={`${currentPlayer}MonsterThree`}
@@ -466,7 +466,7 @@ const DuelMat: React.FC = () => {
           </IonCol>
           <IonCol>
             <CardImage
-              placeholderImage="assets\img\placeholderMonster.png"
+              placeholderImage="assets/img/placeholderMonster.png"
               altText="Monster Card Slot"
               cardsKey={cardsKey}
               fullCardKey={`${currentPlayer}MonsterFour`}
@@ -481,7 +481,7 @@ const DuelMat: React.FC = () => {
           </IonCol>
           <IonCol>
             <CardImage
-              placeholderImage="assets\img\placeholderMonster.png"
+              placeholderImage="assets/img/placeholderMonster.png"
               altText="Monster Card Slot"
               cardsKey={cardsKey}
               fullCardKey={`${currentPlayer}MonsterFive`}
@@ -496,7 +496,7 @@ const DuelMat: React.FC = () => {
           </IonCol>
           <IonCol>
             <CardImage
-              placeholderImage="assets\img\placeholderGraveyard.png"
+              placeholderImage="assets/img/placeholderGraveyard.png"
               altText="Graveyard Slot"
               cardsKey={cardsKey}
               fullCardKey={`${currentPlayer}Graveyard`}
@@ -508,10 +508,10 @@ const DuelMat: React.FC = () => {
           </IonCol>
         </IonRow>
         <IonRow>
-          <IonCol><CardImage placeholderImage="assets\img\yugiohCard.png" altText="Extra Deck Slot" /></IonCol>
+          <IonCol><CardImage placeholderImage="assets/img/yugiohCard.png" altText="Extra Deck Slot" /></IonCol>
           <IonCol>
             <CardImage
-              placeholderImage="assets\img\placeholderSpellTrap.png"
+              placeholderImage="assets/img/placeholderSpellTrap.png"
               altText="Spell/Trap Card Slot"
               cardsKey={cardsKey}
               fullCardKey={`${currentPlayer}SpellTrapOne`}
@@ -526,7 +526,7 @@ const DuelMat: React.FC = () => {
           </IonCol>
           <IonCol>
             <CardImage
-              placeholderImage="assets\img\placeholderSpellTrap.png"
+              placeholderImage="assets/img/placeholderSpellTrap.png"
               altText="Spell/Trap Card Slot"
               cardsKey={cardsKey}
               fullCardKey={`${currentPlayer}SpellTrapTwo`}
@@ -541,7 +541,7 @@ const DuelMat: React.FC = () => {
           </IonCol>
           <IonCol>
             <CardImage
-              placeholderImage="assets\img\placeholderSpellTrap.png"
+              placeholderImage="assets/img/placeholderSpellTrap.png"
               altText="Spell/Trap Card Slot"
               cardsKey={cardsKey}
               fullCardKey={`${currentPlayer}SpellTrapThree`}
@@ -556,7 +556,7 @@ const DuelMat: React.FC = () => {
           </IonCol>
           <IonCol>
             <CardImage
-              placeholderImage="assets\img\placeholderSpellTrap.png"
+              placeholderImage="assets/img/placeholderSpellTrap.png"
               altText="Spell/Trap Card Slot"
               cardsKey={cardsKey}
               fullCardKey={`${currentPlayer}SpellTrapFour`}
@@ -571,7 +571,7 @@ const DuelMat: React.FC = () => {
           </IonCol>
           <IonCol>
             <CardImage
-              placeholderImage="assets\img\placeholderSpellTrap.png"
+              placeholderImage="assets/img/placeholderSpellTrap.png"
               altText="Spell/Trap Card Slot"
               cardsKey={cardsKey}
               fullCardKey={`${currentPlayer}SpellTrapFive`}
@@ -584,7 +584,7 @@ const DuelMat: React.FC = () => {
               handleCardTransfer={handleCardTransfer}
             />
           </IonCol>
-          <IonCol><CardImage placeholderImage="assets\img\yugiohCard.png" altText="Main Deck Slot" /></IonCol>
+          <IonCol><CardImage placeholderImage="assets/img/yugiohCard.png" altText="Main Deck Slot" /></IonCol>
         </IonRow>
       </>
     );
@@ -662,7 +662,7 @@ const DuelMat: React.FC = () => {
               <IonCol style={{ height: "15rem" }}>
                 <CardImage
                   style={{ height: "90%" }}
-                  placeholderImage="assets\img\placeholderBanished.png"
+                  placeholderImage="assets/img/placeholderBanished.png"
                   altText="Opponent Banished Slot"
                   cardsKey={`${createdDuel ? 'playerB' : 'playerA'}Cards`}
                   fullCardKey={`${createdDuel ? 'playerB' : 'playerA'}Banished`}
@@ -673,7 +673,7 @@ const DuelMat: React.FC = () => {
               <IonCol style={{ height: "15rem" }}>
                 <CardImage
                   style={{ height: "90%" }}
-                  placeholderImage="assets\img\placeholderExtraMonster.png"
+                  placeholderImage="assets/img/placeholderExtraMonster.png"
                   altText="Extra Monster Card Slot"
                   shortCardKey={`extraMonster${createdDuel ? 'One' : 'Two'}`}
                   duel={duel}
@@ -696,7 +696,7 @@ const DuelMat: React.FC = () => {
               <IonCol style={{ height: "15rem" }}>
                 <CardImage
                   style={{ height: "90%" }}
-                  placeholderImage="assets\img\placeholderExtraMonster.png"
+                  placeholderImage="assets/img/placeholderExtraMonster.png"
                   altText="Extra Monster Card Slot"
                   shortCardKey={`extraMonster${createdDuel ? 'Two' : 'One'}`}
                   duel={duel}
@@ -710,7 +710,7 @@ const DuelMat: React.FC = () => {
               <IonCol style={{ height: "15rem" }}>
                 <CardImage
                   style={{ height: "90%" }}
-                  placeholderImage="assets\img\placeholderBanished.png"
+                  placeholderImage="assets/img/placeholderBanished.png"
                   altText="Your Banished Slot"
                   cardsKey={`${createdDuel ? 'playerA' : 'playerB'}Cards`}
                   fullCardKey={`${createdDuel ? 'playerA' : 'playerB'}Banished`}

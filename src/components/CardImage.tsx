@@ -59,20 +59,20 @@ const CardImage: React.FC<CardImageProps> = ({
     if (duel && cardsKey && fullCardKey && duel.duelData[cardsKey][fullCardKey]) {
         if (fullCardKey.includes('Banished')) {
             if (duel.duelData[cardsKey][fullCardKey].length > 0) {
-                cardImage = "assets\\img\\banished.png";
+                cardImage = "assets/img/banished.png";
             }
         } else if (fullCardKey.includes('Graveyard')) {
             if (duel.duelData[cardsKey][fullCardKey].length > 0) {
-                cardImage = "assets\\img\\graveyard.png";
+                cardImage = "assets/img/graveyard.png";
             }
         } else if (!duel.duelData[cardsKey][fullCardKey].flipped) {
-            cardImage = "assets\\img\\yugiohCard.png";
+            cardImage = "assets/img/yugiohCard.png";
         } else {
             cardImage = duel.duelData[cardsKey][fullCardKey].cardImage;
         }
     } else if (duel && shortCardKey && (shortCardKey === 'extraMonsterOne' || shortCardKey === 'extraMonsterTwo') && duel.duelData[shortCardKey]) {
         if (!duel.duelData[shortCardKey].flipped) {
-            cardImage = "assets\\img\\yugiohCard.png";
+            cardImage = "assets/img/yugiohCard.png";
         } else {
             cardImage = duel.duelData[shortCardKey].cardImage;
         }
